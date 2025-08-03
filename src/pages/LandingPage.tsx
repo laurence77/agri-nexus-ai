@@ -18,7 +18,15 @@ import {
   MapPin,
   Truck,
   Target,
-  Star
+  Star,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Github,
+  Mail,
+  Phone
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -430,18 +438,90 @@ const LandingPage = () => {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Press</a></li>
-              </ul>
+              <h3 className="font-semibold mb-4">Connect With Us</h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-3">
+                  <a 
+                    href="https://facebook.com/agrinexusai" 
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors group"
+                    aria-label="Facebook"
+                  >
+                    <Facebook className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://twitter.com/agrinexusai" 
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-sky-500 transition-colors group"
+                    aria-label="Twitter"
+                  >
+                    <Twitter className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://instagram.com/agrinexusai" 
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors group"
+                    aria-label="Instagram"
+                  >
+                    <Instagram className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://linkedin.com/company/agrinexusai" 
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors group"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://youtube.com/@agrinexusai" 
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors group"
+                    aria-label="YouTube"
+                  >
+                    <Youtube className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://github.com/laurence77/agri-nexus-ai" 
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors group"
+                    aria-label="GitHub"
+                  >
+                    <Github className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                </div>
+                <div className="space-y-2 pt-2">
+                  <a 
+                    href="mailto:hello@agrinexus.ai" 
+                    className="flex items-center space-x-2 text-gray-300 hover:text-emerald-400 transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span className="text-sm">hello@agrinexus.ai</span>
+                  </a>
+                  <a 
+                    href="tel:+254700000000" 
+                    className="flex items-center space-x-2 text-gray-300 hover:text-emerald-400 transition-colors"
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span className="text-sm">+254 700 000 000</span>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 AgriNexus AI. All rights reserved. Built for African agriculture.</p>
+          <div className="border-t border-gray-800 mt-12 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <div className="text-gray-400 text-sm">
+                <p>&copy; 2025 AgriNexus AI. All rights reserved. Built for African agriculture.</p>
+              </div>
+              <div className="flex items-center space-x-6 text-sm text-gray-400">
+                <a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a>
+                <a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a>
+                <a href="#" className="hover:text-emerald-400 transition-colors">Cookie Policy</a>
+                <a href="#" className="hover:text-emerald-400 transition-colors">About</a>
+                <a href="#" className="hover:text-emerald-400 transition-colors">Blog</a>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-800 text-center">
+              <p className="text-xs text-gray-500">
+                Empowering African farmers with AI technology • Available in 8 languages • Supporting 500,000+ farmers across Africa
+              </p>
+            </div>
           </div>
         </div>
       </footer>
