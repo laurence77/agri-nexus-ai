@@ -26,7 +26,10 @@ import {
   Youtube,
   Github,
   Mail,
-  Phone
+  Phone,
+  Send,
+  BookOpen,
+  Newspaper
 } from 'lucide-react';
 
 const LandingPage = () => {
@@ -401,6 +404,83 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Newsletter Section */}
+      <section className="py-16 px-4 bg-gradient-to-r from-emerald-600 to-green-700">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="glass-card text-white">
+            <div className="space-y-6">
+              <div className="flex justify-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                  <Newspaper className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <h2 className="text-3xl font-bold text-white">
+                  Stay Ahead with AgriNexus Insights
+                </h2>
+                <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
+                  Get daily agricultural insights, AI tips, market intelligence, and success stories 
+                  from African farmers delivered straight to your inbox.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-4 text-sm text-emerald-100">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Daily market prices</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Weather forecasts</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>AI farming tips</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Success stories</span>
+                </div>
+              </div>
+
+              <div className="max-w-md mx-auto">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your email address"
+                    className="flex-1 px-4 py-3 rounded-lg border border-emerald-300 bg-white/10 backdrop-blur-lg text-white placeholder-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  />
+                  <Button className="glass-button bg-white text-emerald-600 hover:bg-emerald-50 border-0 px-6 py-3">
+                    <Send className="w-4 h-4 mr-2" />
+                    Subscribe Free
+                  </Button>
+                </div>
+                
+                <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <p className="text-sm text-emerald-200">
+                    Join 25,000+ farmers already subscribed
+                  </p>
+                  <a 
+                    href="https://agrinexusai.substack.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 text-sm text-white hover:text-emerald-200 transition-colors underline"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>Read on Substack</span>
+                  </a>
+                </div>
+              </div>
+
+              <div className="text-xs text-emerald-200 pt-2">
+                No spam. Unsubscribe anytime. Available in English, Swahili, French & Portuguese.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4">
         <div className="max-w-7xl mx-auto">
@@ -482,6 +562,24 @@ const LandingPage = () => {
                     aria-label="GitHub"
                   >
                     <Github className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://agrinexusai.substack.com" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors group"
+                    aria-label="Substack Newsletter"
+                  >
+                    <Newspaper className="w-5 h-5 text-gray-300 group-hover:text-white" />
+                  </a>
+                  <a 
+                    href="https://agrinexusai.substack.com" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors group"
+                    aria-label="Subscribe to Newsletter"
+                  >
+                    <BookOpen className="w-5 h-5 text-gray-300 group-hover:text-white" />
                   </a>
                 </div>
                 <div className="space-y-2 pt-2">
