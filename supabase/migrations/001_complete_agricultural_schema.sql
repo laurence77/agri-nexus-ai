@@ -1,7 +1,10 @@
--- Complete Multi-Tenant Agricultural Management Platform Schema
--- Enable required extensions
+-- Complete Agricultural Platform Database Schema
+-- Multi-tenant SaaS with comprehensive agricultural management features
+
+-- Enable extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
+CREATE EXTENSION IF NOT EXISTS "timescaledb";
 
 -- Custom ENUM types for agricultural operations
 CREATE TYPE tenant_tier AS ENUM ('free', 'basic', 'professional', 'enterprise');
@@ -463,6 +466,29 @@ USING (
 WITH CHECK (
   EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND role = 'super_admin')
 );
+
+-- 16. ANALYTICS VIEWS
+CREATE MATERIALIZED VIEW farm_analytics AS
+SELECT 
+  f.tenant_id,
+  f.id as farm_id,
+  f.name as farm_name,
+  f.area_hectares,
+  COUNT(DISTINCT fi.id) as field_count,
+  COUNT(DISTINCT c.id) as crop_count,
+  SUM(c.actual_yield_kg) as total_yield_kg,
+  AVG(c.health_score) as avg_health_score,
+  COUNT(DISTINCT CASE WHEN c.status = 'harvested' THEN c.id END) as harvested_crops,
+  SUM(CASE WHEN t.transaction_type = 'crop_sale' THEN t.amount ELSE 0 END) as total_revenue
+FROM farms f
+LEFT JOIN fields fi ON f.id = fi.farm_id
+LEFT JOIN crops c ON fi.id = c.field_id
+LEFT JOIN orders o ON o.seller_id IN (SELECT id FROM profiles WHERE tenant_id = f.tenant_id)
+LEFT JOIN transactions t ON o.id = t.order_id
+GROUP BY f.tenant_id, f.id, f.name, f.area_hectares;
+
+-- Create TimescaleDB hypertable for sensor data
+SELECT create_hypertable('sensor_readings', 'timestamp', if_not_exists => TRUE);
 
 -- Insert demo tenants and users
 INSERT INTO tenants (name, subdomain, country_code, currency, timezone) VALUES

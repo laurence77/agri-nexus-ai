@@ -338,6 +338,104 @@ export interface WeatherData {
   created_at: string;
 }
 
+// Additional interfaces for enhanced functionality
+export interface FarmAnalytics {
+  tenant_id: string;
+  farm_id: string;
+  farm_name: string;
+  area_hectares?: number;
+  field_count: number;
+  crop_count: number;
+  total_yield_kg?: number;
+  avg_health_score?: number;
+  harvested_crops: number;
+  total_revenue?: number;
+}
+
+export interface DashboardMetrics {
+  total_farms: number;
+  total_fields: number;
+  active_crops: number;
+  recent_activities: number;
+  pending_orders: number;
+  total_revenue: number;
+  weather_alerts: number;
+  equipment_maintenance_due: number;
+}
+
+// API Response types
+export interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+  message?: string;
+  success: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  count: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
+// Mobile money payment interfaces
+export interface MobileMoneyRequest {
+  phone_number: string;
+  amount: number;
+  currency: string;
+  reference: string;
+  description?: string;
+  provider: 'mpesa' | 'mtn_momo' | 'airtel_money';
+}
+
+export interface MobileMoneyResponse {
+  transaction_id: string;
+  status: 'pending' | 'completed' | 'failed';
+  provider_reference?: string;
+  message?: string;
+}
+
+// Voice and USSD interfaces
+export interface USSDSession {
+  session_id: string;
+  phone_number: string;
+  text: string;
+  level: number;
+  user_data?: Record<string, any>;
+}
+
+export interface VoiceCommand {
+  command: string;
+  language: 'en' | 'sw' | 'ha' | 'yo' | 'fr';
+  confidence: number;
+  parameters?: Record<string, any>;
+}
+
+// Notification interfaces
+export interface Notification {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  read: boolean;
+  created_at: string;
+  action_url?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface WeatherAlert {
+  id: string;
+  location: [number, number];
+  alert_type: 'rain' | 'drought' | 'storm' | 'frost' | 'heat';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  start_time: string;
+  end_time?: string;
+  affected_farms: string[];
+}
+
 // Dashboard-specific interfaces
 export interface FarmMetrics {
   totalFarms: number;
