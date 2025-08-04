@@ -1,69 +1,88 @@
-import { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth, UserRole } from '@/contexts/auth-context';
-import { LoginForm } from './login-form';
-import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/multi-tenant-auth';
+import type { AgriculturalRole } from '@/types/agricultural';
+import { Card, CardContent } from '@/components/ui/card';
+import { Shield, AlertTriangle, Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiredRole?: UserRole;
+  requiredRoles?: AgriculturalRole[];
   requiredPermissions?: string[];
-  fallback?: ReactNode;
+  fallbackPath?: string;
+  showFallback?: boolean;
 }
 
-export function ProtectedRoute({ 
-  children, 
-  requiredRole, 
+/**
+ * Protected Route Component
+ * Handles authentication and authorization for routes
+ */
+export function ProtectedRoute({
+  children,
+  requiredRoles = [],
   requiredPermissions = [],
-  fallback 
+  fallbackPath = '/login',
+  showFallback = true
 }: ProtectedRouteProps) {
-  const { user, isAuthenticated, isLoading, checkPermission, hasRole } = useAuth();
+  const { 
+    user, 
+    profile, 
+    loading, 
+    initializing, 
+    hasRole, 
+    hasPermission 
+  } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while checking authentication
-  if (isLoading) {
+  // Show loading spinner during initialization
+  if (initializing || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-          <p className="text-sm text-muted-foreground">Verifying access...</p>
-        </div>
+        <Card className="glass">
+          <CardContent className="flex items-center space-x-4 p-6">
+            <Loader2 className="h-6 w-6 animate-spin text-green-600" />
+            <span className="text-lg font-medium">Loading...</span>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   // Redirect to login if not authenticated
-  if (!isAuthenticated || !user) {
-    return <LoginForm />;
-  }
-
-  // Check role-based access
-  if (requiredRole && !hasRole(requiredRole)) {
+  if (!user || !profile) {
     return (
-      <AccessDenied 
-        message={`This area requires ${requiredRole} privileges.`}
-        fallback={fallback}
+      <Navigate 
+        to={fallbackPath} 
+        state={{ from: location }} 
+        replace 
       />
     );
   }
 
-  // Check permission-based access
-  if (requiredPermissions.length > 0) {
-    const hasAllPermissions = requiredPermissions.every(permission => 
-      checkPermission(permission)
-    );
-
-    if (!hasAllPermissions) {
-      return (
-        <AccessDenied 
-          message="You don't have sufficient permissions to access this area."
-          fallback={fallback}
-        />
-      );
+  // Check role-based access
+  if (requiredRoles.length > 0) {
+    const hasRequiredRole = requiredRoles.some(role => hasRole(role));
+    if (!hasRequiredRole) {
+      if (showFallback) {
+        return <AccessDenied requiredRoles={requiredRoles} />;
+      }
+      return <Navigate to="/dashboard" replace />;
     }
   }
 
-  // User is authenticated and authorized
+  // Check permission-based access
+  if (requiredPermissions.length > 0) {
+    const hasRequiredPermissions = requiredPermissions.every(permission => 
+      hasPermission(permission)
+    );
+    if (!hasRequiredPermissions) {
+      if (showFallback) {
+        return <AccessDenied requiredPermissions={requiredPermissions} />;
+      }
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
+
   return <>{children}</>;
 }
 
