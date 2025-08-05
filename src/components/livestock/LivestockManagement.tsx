@@ -38,17 +38,24 @@ interface Animal {
   parentId?: string
   pregnancyStatus?: 'pregnant' | 'not_pregnant' | 'lactating'
   productionData: {
-    milkProduction?: number // liters per day
-    eggProduction?: number // eggs per day
-    weightGain?: number // kg per month
+    milkProduction?: number
+    eggProduction?: number
+    weightGain?: number
   }
   healthRecords: HealthRecord[]
   vaccinations: Vaccination[]
   treatments: Treatment[]
+  feedRecords: FeedRecord[]
+  financialRecords: FinancialRecord[]
+  breedingHistory: BreedingRecord[]
   aiVetConnected: boolean
   lastHealthCheck: Date
   nextHealthCheck: Date
   marketValue: number
+  dailyFeedCost: number
+  monthlyRevenue: number
+  rfidTag?: string
+  gpsLocation?: { lat: number; lng: number }
 }
 
 interface HealthRecord {
@@ -94,6 +101,46 @@ interface Treatment {
   notes: string
 }
 
+interface FeedRecord {
+  id: string
+  animalId: string
+  feedType: string
+  quantity: number
+  unit: string
+  cost: number
+  date: Date
+  supplier?: string
+  nutritionalContent: {
+    protein: number
+    energy: number
+    fiber: number
+  }
+}
+
+interface FinancialRecord {
+  id: string
+  animalId: string
+  type: 'income' | 'expense'
+  category: 'milk_sales' | 'egg_sales' | 'meat_sales' | 'vet_costs' | 'feed_costs' | 'medication' | 'equipment'
+  amount: number
+  currency: string
+  date: Date
+  description: string
+  invoiceNumber?: string
+}
+
+interface BreedingRecord {
+  id: string
+  femaleId: string
+  maleId?: string
+  breedingDate: Date
+  expectedDueDate: Date
+  actualBirthDate?: Date
+  numberOfOffspring?: number
+  complications?: string
+  success: boolean
+}
+
 interface LivestockStats {
   totalAnimals: number
   healthyAnimals: number
@@ -103,6 +150,9 @@ interface LivestockStats {
   dailyMilkProduction: number
   dailyEggProduction: number
   averageWeightGain: number
+  monthlyFeedCosts: number
+  monthlyRevenue: number
+  profitMargin: number
 }
 
 const LivestockManagement: React.FC = () => {
@@ -115,12 +165,19 @@ const LivestockManagement: React.FC = () => {
     totalValue: 0,
     dailyMilkProduction: 0,
     dailyEggProduction: 0,
-    averageWeightGain: 0
+    averageWeightGain: 0,
+    monthlyFeedCosts: 0,
+    monthlyRevenue: 0,
+    profitMargin: 0
   })
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterSpecies, setFilterSpecies] = useState<string>('all')
   const [showAIVet, setShowAIVet] = useState(false)
+  const [showFeedDialog, setShowFeedDialog] = useState(false)
+  const [showFinancialDialog, setShowFinancialDialog] = useState(false)
+  const [feedData, setFeedData] = useState({ animalId: '', feedType: '', quantity: 0, cost: 0 })
+  const [financialData, setFinancialData] = useState({ animalId: '', type: 'income', category: 'milk_sales', amount: 0, description: '' })
 
   const sampleAnimals: Animal[] = [
     {
@@ -165,10 +222,17 @@ const LivestockManagement: React.FC = () => {
         }
       ],
       treatments: [],
+      feedRecords: [],
+      financialRecords: [],
+      breedingHistory: [],
       aiVetConnected: true,
       lastHealthCheck: new Date('2024-01-15'),
       nextHealthCheck: new Date('2024-02-15'),
-      marketValue: 120000
+      marketValue: 120000,
+      dailyFeedCost: 450,
+      monthlyRevenue: 18750,
+      rfidTag: 'RFID-COW-001',
+      gpsLocation: { lat: -1.2921, lng: 36.8219 }
     },
     {
       id: 'animal-002',
@@ -188,10 +252,16 @@ const LivestockManagement: React.FC = () => {
       healthRecords: [],
       vaccinations: [],
       treatments: [],
+      feedRecords: [],
+      financialRecords: [],
+      breedingHistory: [],
       aiVetConnected: false,
       lastHealthCheck: new Date('2024-01-10'),
       nextHealthCheck: new Date('2024-02-10'),
-      marketValue: 15000
+      marketValue: 15000,
+      dailyFeedCost: 85,
+      monthlyRevenue: 0,
+      rfidTag: 'RFID-GOAT-001'
     },
     {
       id: 'animal-003',
@@ -210,10 +280,16 @@ const LivestockManagement: React.FC = () => {
       healthRecords: [],
       vaccinations: [],
       treatments: [],
+      feedRecords: [],
+      financialRecords: [],
+      breedingHistory: [],
       aiVetConnected: true,
       lastHealthCheck: new Date('2024-01-12'),
       nextHealthCheck: new Date('2024-02-12'),
-      marketValue: 800
+      marketValue: 800,
+      dailyFeedCost: 12,
+      monthlyRevenue: 120,
+      rfidTag: 'RFID-CHICK-001'
     }
   ]
 
@@ -361,12 +437,14 @@ const LivestockManagement: React.FC = () => {
       </div>
 
       <Tabs defaultValue="animals" className="space-y-6">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="animals">Animals</TabsTrigger>
-          <TabsTrigger value="health">Health Monitoring</TabsTrigger>
+          <TabsTrigger value="health">Health</TabsTrigger>
           <TabsTrigger value="production">Production</TabsTrigger>
+          <TabsTrigger value="feed">Feed</TabsTrigger>
+          <TabsTrigger value="financials">Financials</TabsTrigger>
           <TabsTrigger value="breeding">Breeding</TabsTrigger>
-          <TabsTrigger value="ai-vet">AI Veterinarian</TabsTrigger>
+          <TabsTrigger value="ai-vet">AI Vet</TabsTrigger>
         </TabsList>
 
         <TabsContent value="animals">
@@ -391,6 +469,8 @@ const LivestockManagement: React.FC = () => {
                     value={filterSpecies}
                     onChange={(e) => setFilterSpecies(e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md bg-white"
+                    aria-label="Filter by species"
+                    title="Filter by species"
                   >
                     <option value="all">All Species</option>
                     <option value="cattle">Cattle</option>
@@ -629,6 +709,245 @@ const LivestockManagement: React.FC = () => {
               <CardContent>
                 <div className="text-center text-gray-500 py-8">
                   Production trend charts coming soon...
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="feed">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Feed Management</CardTitle>
+                    <p className="text-gray-600">Track feed consumption, costs, and nutritional requirements</p>
+                  </div>
+                  <Button onClick={() => setShowFeedDialog(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Feed Record
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="h-4 w-4 text-green-600" />
+                      <span className="font-medium">Daily Feed Cost</span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-600">
+                      ${animals.reduce((sum, animal) => sum + animal.dailyFeedCost, 0).toFixed(0)}
+                    </p>
+                    <p className="text-sm text-gray-600">Across all animals</p>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                      <span className="font-medium">Monthly Cost</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-600">
+                      ${(animals.reduce((sum, animal) => sum + animal.dailyFeedCost, 0) * 30).toFixed(0)}
+                    </p>
+                    <p className="text-sm text-gray-600">Estimated monthly</p>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Activity className="h-4 w-4 text-orange-600" />
+                      <span className="font-medium">Feed Efficiency</span>
+                    </div>
+                    <p className="text-2xl font-bold text-orange-600">2.8</p>
+                    <p className="text-sm text-gray-600">FCR (Feed Conversion Ratio)</p>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                      <span className="font-medium">Low Stock</span>
+                    </div>
+                    <p className="text-2xl font-bold text-red-600">3</p>
+                    <p className="text-sm text-gray-600">Feed types low</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-medium">Recent Feed Records</h3>
+                  <div className="border rounded-lg">
+                    <div className="p-4 border-b">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Dairy Concentrate - COW-001</p>
+                          <p className="text-sm text-gray-600">25kg @ $2.50/kg - Today, 6:00 AM</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">$62.50</p>
+                          <Badge variant="outline" className="text-xs">Protein: 18%</Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4 border-b">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Layer Mash - CHICK-001</p>
+                          <p className="text-sm text-gray-600">2kg @ $1.20/kg - Yesterday, 6:30 AM</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">$2.40</p>
+                          <Badge variant="outline" className="text-xs">Protein: 16%</Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Goat Pellets - GOAT-001</p>
+                          <p className="text-sm text-gray-600">5kg @ $1.80/kg - 2 days ago, 7:00 AM</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">$9.00</p>
+                          <Badge variant="outline" className="text-xs">Protein: 14%</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="financials">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Financial Management</CardTitle>
+                    <p className="text-gray-600">Track income, expenses, and profitability per animal</p>
+                  </div>
+                  <Button onClick={() => setShowFinancialDialog(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Transaction
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-4 w-4 text-green-600" />
+                      <span className="font-medium">Monthly Revenue</span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-600">
+                      ${animals.reduce((sum, animal) => sum + animal.monthlyRevenue, 0).toFixed(0)}
+                    </p>
+                    <p className="text-sm text-gray-600">From all animals</p>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingDown className="h-4 w-4 text-red-600" />
+                      <span className="font-medium">Monthly Costs</span>
+                    </div>
+                    <p className="text-2xl font-bold text-red-600">
+                      ${(animals.reduce((sum, animal) => sum + animal.dailyFeedCost, 0) * 30 + 2500).toFixed(0)}
+                    </p>
+                    <p className="text-sm text-gray-600">Feed + vet + misc</p>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="h-4 w-4 text-blue-600" />
+                      <span className="font-medium">Net Profit</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-600">
+                      ${(animals.reduce((sum, animal) => sum + animal.monthlyRevenue, 0) - (animals.reduce((sum, animal) => sum + animal.dailyFeedCost, 0) * 30 + 2500)).toFixed(0)}
+                    </p>
+                    <p className="text-sm text-gray-600">This month</p>
+                  </div>
+
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Activity className="h-4 w-4 text-purple-600" />
+                      <span className="font-medium">ROI</span>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-600">24%</p>
+                    <p className="text-sm text-gray-600">Return on investment</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Income Breakdown</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="flex items-center gap-2">
+                            <Milk className="h-4 w-4" />
+                            Milk Sales
+                          </span>
+                          <span className="font-bold text-green-600">$15,750</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="flex items-center gap-2">
+                            <Egg className="h-4 w-4" />
+                            Egg Sales
+                          </span>
+                          <span className="font-bold text-green-600">$960</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="flex items-center gap-2">
+                            <Beef className="h-4 w-4" />
+                            Meat Sales
+                          </span>
+                          <span className="font-bold text-green-600">$2,160</span>
+                        </div>
+                        <div className="border-t pt-2">
+                          <div className="flex justify-between items-center font-bold">
+                            <span>Total Income</span>
+                            <span className="text-green-600">$18,870</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Expense Breakdown</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span>Feed Costs</span>
+                          <span className="font-bold text-red-600">$16,245</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Veterinary</span>
+                          <span className="font-bold text-red-600">$1,200</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Labor</span>
+                          <span className="font-bold text-red-600">$800</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Utilities</span>
+                          <span className="font-bold text-red-600">$320</span>
+                        </div>
+                        <div className="border-t pt-2">
+                          <div className="flex justify-between items-center font-bold">
+                            <span>Total Expenses</span>
+                            <span className="text-red-600">$18,565</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </CardContent>
             </Card>

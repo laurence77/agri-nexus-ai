@@ -175,7 +175,7 @@ export class AuthService {
         .insert({
           user_id: authData.user.id,
           tenant_id: userData.tenant_id,
-          email: userData.email,
+          email: email,
           full_name: userData.full_name,
           phone_number: userData.phone_number,
           role: userData.role as any,
@@ -422,5 +422,4 @@ export class SupabaseError extends Error {
 }
 
 // Export configured client and services
-export { supabase as default };
 export default supabase;
