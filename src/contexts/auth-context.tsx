@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { logger } from '@/lib/logger';
 
 export type UserRole = 'admin' | 'manager' | 'operator' | 'viewer';
 
@@ -132,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (error) {
-      console.error('Session validation error:', error);
+      logger.error('Session validation failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'AuthContext');
     }
 
     logout();
@@ -185,7 +186,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return false;
     } catch (error) {
-      console.error('Login error:', error);
+      logger.error('Login attempt failed', { email, error: error instanceof Error ? error.message : 'Unknown error' }, 'AuthContext');
       auditLog('login_failed', { email, error: error instanceof Error ? error.message : 'Unknown error' });
       return false;
     }
@@ -232,7 +233,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout();
       return false;
     } catch (error) {
-      console.error('Session refresh error:', error);
+      logger.error('Session refresh failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'AuthContext');
       logout();
       return false;
     }
@@ -271,37 +272,46 @@ async function simulateSecureLogin(email: string, password: string, mfaCode?: st
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Demo users with different roles
-  const demoUsers: Record<string, { user: User; password: string; mfaSecret?: string }> = {
-    'admin@agrinexus.ai': {
-      password: 'Admin123!@#',
+  // SECURITY: Only allow demo authentication in development
+  if (process.env.NODE_ENV === 'production' && process.env.DEMO_MODE !== 'true') {
+    throw new Error('Demo authentication disabled in production');
+  }
+
+  // Use environment variables for demo credentials (never hardcode)
+  const validCredentials = [
+    {
+      email: process.env.REACT_APP_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
+      password: process.env.REACT_APP_DEMO_ADMIN_PASSWORD,
       user: {
         id: '1',
-        email: 'admin@agrinexus.ai',
+        email: process.env.REACT_APP_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
         name: 'System Administrator',
-        role: 'admin',
+        role: 'admin' as UserRole,
         permissions: [],
         lastLogin: new Date(),
         mfaEnabled: true,
       }
     },
-    'manager@agrinexus.ai': {
-      password: 'Manager123!',
+    {
+      email: process.env.REACT_APP_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
+      password: process.env.REACT_APP_DEMO_MANAGER_PASSWORD,
       user: {
         id: '2',
-        email: 'manager@agrinexus.ai',
+        email: process.env.REACT_APP_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
         name: 'Farm Manager',
-        role: 'manager',
+        role: 'manager' as UserRole,
         permissions: [],
         lastLogin: new Date(),
         mfaEnabled: false,
       }
     }
-  };
+  ];
 
-  const userRecord = demoUsers[email.toLowerCase()];
+  const userRecord = validCredentials.find(
+    cred => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
+  );
   
-  if (!userRecord || userRecord.password !== password) {
+  if (!userRecord) {
     throw new Error('Invalid credentials');
   }
 
@@ -310,7 +320,7 @@ async function simulateSecureLogin(email: string, password: string, mfaCode?: st
     throw new Error('MFA code required');
   }
 
-  if (userRecord.user.mfaEnabled && mfaCode !== '123456') {
+  if (userRecord.user.mfaEnabled && mfaCode !== process.env.REACT_APP_DEMO_MFA_CODE) {
     throw new Error('Invalid MFA code');
   }
 
@@ -347,7 +357,7 @@ function auditLog(action: string, details: Record<string, unknown>) {
     ip: 'client-side', // In production, capture from server
   };
   
-  console.log('AUDIT LOG:', logEntry);
+  logger.audit(logEntry.action, { details: logEntry.details, timestamp: logEntry.timestamp }, 'AuditLogger');
   
   // In production, send to secure audit service
   // await fetch('/api/audit', { method: 'POST', body: JSON.stringify(logEntry) });

@@ -126,13 +126,13 @@ const NotificationToast = ({
         {autoHide && type !== 'critical' && (
           <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 rounded-t-lg">
             <div
-              className={`h-full rounded-t-lg transition-all duration-100 ${
+              className={`h-full rounded-t-lg transition-all duration-100 notification-progress ${
                 type === 'critical' ? 'bg-red-500' :
                 type === 'warning' ? 'bg-orange-500' :
                 type === 'info' ? 'bg-blue-500' :
                 'bg-green-500'
               }`}
-              style={{ width: `${progress}%` }}
+              style={{ '--notification-progress': `${progress}%` } as React.CSSProperties}
             />
           </div>
         )}

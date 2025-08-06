@@ -177,11 +177,14 @@ const Onboarding = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Years of Farming Experience</label>
+          <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">Years of Farming Experience</label>
           <select
+            id="experience"
             value={formData.personalInfo.experience}
             onChange={(e) => updateFormData('personalInfo', 'experience', e.target.value)}
             className="glass-input w-full"
+            aria-label="Select your years of farming experience"
+            title="Years of Farming Experience"
           >
             <option value="">Select experience level</option>
             <option value="beginner">New to farming (0-2 years)</option>
@@ -192,11 +195,14 @@ const Onboarding = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Education Level</label>
+          <label htmlFor="education" className="block text-sm font-medium text-gray-700 mb-2">Education Level</label>
           <select
+            id="education"
             value={formData.personalInfo.education}
             onChange={(e) => updateFormData('personalInfo', 'education', e.target.value)}
             className="glass-input w-full"
+            aria-label="Select your education level"
+            title="Education Level"
           >
             <option value="">Select education level</option>
             <option value="primary">Primary education</option>
@@ -283,10 +289,13 @@ const Onboarding = () => {
               </div>
             </div>
             <input
+              id="hasEquipment"
               type="checkbox"
               checked={formData.farmInfo.hasEquipment}
               onChange={(e) => updateFormData('farmInfo', 'hasEquipment', e.target.checked)}
               className="h-4 w-4 text-green-600 rounded"
+              aria-label="I have farm equipment"
+              title="I have farm equipment"
             />
           </div>
 
@@ -299,10 +308,13 @@ const Onboarding = () => {
               </div>
             </div>
             <input
+              id="hasSensors"
               type="checkbox"
               checked={formData.farmInfo.hasSensors}
               onChange={(e) => updateFormData('farmInfo', 'hasSensors', e.target.checked)}
               className="h-4 w-4 text-purple-600 rounded"
+              aria-label="I have smart sensors"
+              title="I have smart sensors"
             />
           </div>
         </div>
@@ -347,11 +359,14 @@ const Onboarding = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Target Yield Increase</label>
+          <label htmlFor="targetYield" className="block text-sm font-medium text-gray-700 mb-2">Target Yield Increase</label>
           <select
+            id="targetYield"
             value={formData.goals.targetYield}
             onChange={(e) => updateFormData('goals', 'targetYield', e.target.value)}
             className="glass-input w-full"
+            aria-label="Select your target yield increase percentage"
+            title="Target Yield Increase"
           >
             <option value="">Select target increase</option>
             <option value="10">10% increase</option>
@@ -522,10 +537,13 @@ const Onboarding = () => {
             </div>
           </div>
           <input
+            id="cooperativeInterest"
             type="checkbox"
             checked={formData.preferences.cooperativeInterest}
             onChange={(e) => updateFormData('preferences', 'cooperativeInterest', e.target.checked)}
             className="h-4 w-4 text-blue-600 rounded"
+            aria-label="I am interested in joining a cooperative"
+            title="Join a Cooperative"
           />
         </div>
       </div>
@@ -598,7 +616,7 @@ const Onboarding = () => {
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-emerald-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float animate-delay-2s" />
       </div>
 
       {/* Header */}

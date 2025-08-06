@@ -35,8 +35,11 @@ import {
   Settings,
   CreditCard,
   Shield,
-  Truck
+  Truck,
+  Eye
 } from "lucide-react";
+import { ProvenanceTooltip } from '@/components/ui/provenance-tooltip';
+import { ProvenanceViewer } from '@/components/ui/provenance-viewer';
 
 interface FAQItem {
   id: string;
@@ -575,20 +578,24 @@ const Support = () => {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-3">
                     <span className="font-medium text-gray-900">{ticket.id}</span>
-                    <Badge className={`glass-badge ${
-                      ticket.status === 'resolved' ? 'success' :
-                      ticket.status === 'in-progress' ? 'warning' :
-                      ticket.status === 'open' ? 'info' : 'error'
-                    }`}>
-                      {ticket.status}
-                    </Badge>
-                    <Badge className={`glass-badge ${
-                      ticket.priority === 'urgent' ? 'error' :
-                      ticket.priority === 'high' ? 'warning' :
-                      ticket.priority === 'medium' ? 'info' : 'success'
-                    }`}>
-                      {ticket.priority}
-                    </Badge>
+                    <ProvenanceTooltip tableName="support_tickets" recordId={ticket.id} fieldName="status">
+                      <Badge className={`glass-badge ${
+                        ticket.status === 'resolved' ? 'success' :
+                        ticket.status === 'in-progress' ? 'warning' :
+                        ticket.status === 'open' ? 'info' : 'error'
+                      }`}>
+                        {ticket.status}
+                      </Badge>
+                    </ProvenanceTooltip>
+                    <ProvenanceTooltip tableName="support_tickets" recordId={ticket.id} fieldName="priority">
+                      <Badge className={`glass-badge ${
+                        ticket.priority === 'urgent' ? 'error' :
+                        ticket.priority === 'high' ? 'warning' :
+                        ticket.priority === 'medium' ? 'info' : 'success'
+                      }`}>
+                        {ticket.priority}
+                      </Badge>
+                    </ProvenanceTooltip>
                   </div>
                   <span className="text-sm text-gray-500">
                     {new Date(ticket.createdAt).toLocaleDateString()}
@@ -596,8 +603,14 @@ const Support = () => {
                 </div>
                 <h4 className="font-medium text-gray-900 mb-2">{ticket.title}</h4>
                 <div className="flex items-center justify-between text-sm text-gray-600">
-                  <span>Agent: {ticket.agent}</span>
+                  <ProvenanceTooltip tableName="support_tickets" recordId={ticket.id} fieldName="agent">
+                    <span>Agent: {ticket.agent}</span>
+                  </ProvenanceTooltip>
                   <span>Last update: {new Date(ticket.lastUpdate).toLocaleDateString()}</span>
+                </div>
+                {/* ProvenanceViewer for full ticket history (collapsible or always visible) */}
+                <div className="mt-4">
+                  <ProvenanceViewer tableName="support_tickets" recordId={ticket.id} maxHistory={5} />
                 </div>
               </div>
             ))}
@@ -695,8 +708,10 @@ const Support = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="contact-language">Language</label>
               <select
+                id="contact-language"
+                title="Language"
                 value={contactForm.language}
                 onChange={(e) => setContactForm(prev => ({ ...prev, language: e.target.value }))}
                 className="glass-input w-full"
@@ -711,8 +726,10 @@ const Support = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="contact-category">Category</label>
               <select
+                id="contact-category"
+                title="Category"
                 value={contactForm.category}
                 onChange={(e) => setContactForm(prev => ({ ...prev, category: e.target.value }))}
                 className="glass-input w-full"
@@ -725,8 +742,10 @@ const Support = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="contact-priority">Priority</label>
               <select
+                id="contact-priority"
+                title="Priority"
                 value={contactForm.priority}
                 onChange={(e) => setContactForm(prev => ({ ...prev, priority: e.target.value }))}
                 className="glass-input w-full"
@@ -786,7 +805,7 @@ const Support = () => {
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl animate-float support-bg-float" />
       </div>
 
       <div className="pt-32 px-4 pb-8">

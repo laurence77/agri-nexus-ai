@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 export interface WeatherForecast {
   date: string;
@@ -142,7 +143,7 @@ class ForecastEngine {
       return forecasts;
 
     } catch (error) {
-      console.error('Error generating weather forecast:', error);
+      logger.error('Weather forecast generation failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'ForecastEngine');
       throw error;
     }
   }
@@ -175,7 +176,7 @@ class ForecastEngine {
       return diseaseForecasts.sort((a, b) => b.probability - a.probability);
 
     } catch (error) {
-      console.error('Error predicting disease risk:', error);
+      logger.error('Disease risk prediction failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'ForecastEngine');
       throw error;
     }
   }
@@ -212,7 +213,7 @@ class ForecastEngine {
         .order('date', { ascending: false })
         .limit(5);
 
-      if (yieldError) console.error('Error fetching historical yields:', yieldError);
+      if (yieldError) logger.error('Historical yields fetch failed', { error: yieldError instanceof Error ? yieldError.message : 'Unknown error' }, 'ForecastEngine');
 
       // Get current season's activities
       const { data: currentActivities, error: activitiesError } = await supabase
@@ -222,7 +223,7 @@ class ForecastEngine {
         .gte('date', plantingDate)
         .order('date', { ascending: true });
 
-      if (activitiesError) console.error('Error fetching current activities:', activitiesError);
+      if (activitiesError) logger.error('Current activities fetch failed', { error: activitiesError instanceof Error ? activitiesError.message : 'Unknown error' }, 'ForecastEngine');
 
       // Calculate yield forecast
       const forecast = await this.calculateYieldForecast(
@@ -236,7 +237,7 @@ class ForecastEngine {
       return forecast;
 
     } catch (error) {
-      console.error('Error forecasting yield:', error);
+      logger.error('Yield forecasting failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'ForecastEngine');
       throw error;
     }
   }
@@ -259,7 +260,7 @@ class ForecastEngine {
         .order('date', { ascending: false })
         .limit(365); // Last year of data
 
-      if (error) console.error('Error fetching historical prices:', error);
+      if (error) logger.error('Historical prices fetch failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'ForecastEngine');
 
       // Generate price forecast
       const forecast = await this.calculatePriceForecast(
@@ -272,7 +273,7 @@ class ForecastEngine {
       return forecast;
 
     } catch (error) {
-      console.error('Error forecasting market prices:', error);
+      logger.error('Market price forecasting failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'ForecastEngine');
       throw error;
     }
   }
@@ -328,7 +329,7 @@ class ForecastEngine {
       });
 
     } catch (error) {
-      console.error('Error generating insights:', error);
+      logger.error('Insights generation failed', { error: error instanceof Error ? error.message : 'Unknown error' }, 'ForecastEngine');
       throw error;
     }
   }

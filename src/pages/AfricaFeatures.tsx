@@ -23,7 +23,7 @@ const AfricaFeatures = () => {
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-400/10 to-red-400/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-red-400/10 to-yellow-400/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-red-400/10 to-yellow-400/10 rounded-full blur-3xl animate-float animate-delay-2s" />
       </div>
 
       {/* Header Navigation */}

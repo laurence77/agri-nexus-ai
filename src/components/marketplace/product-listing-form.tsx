@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +44,8 @@ const ProductListingForm = ({ onClose, onSubmit }: ProductListingFormProps) => {
     phone: '',
     featured: false
   });
+
+  const [certifications, setCertifications] = useState<{ name: string; url: string }[]>([]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 4;
@@ -96,6 +98,15 @@ const ProductListingForm = ({ onClose, onSubmit }: ProductListingFormProps) => {
     }));
   };
 
+  const handleCertUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newCerts = files.map(file => ({
+      name: file.name,
+      url: URL.createObjectURL(file)
+    }));
+    setCertifications(prev => [...prev, ...newCerts]);
+  };
+
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
@@ -127,7 +138,8 @@ const ProductListingForm = ({ onClose, onSubmit }: ProductListingFormProps) => {
         phone: formData.phone
       },
       priceHistory: [{ date: new Date().toISOString(), price: parseFloat(formData.price) }],
-      featured: formData.featured
+      featured: formData.featured,
+      certifications: certifications
     });
 
     onClose();
@@ -383,6 +395,18 @@ const ProductListingForm = ({ onClose, onSubmit }: ProductListingFormProps) => {
                     <X className="w-3 h-3" />
                   </button>
                 </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Quality Certifications</label>
+            <input type="file" multiple accept="application/pdf,image/*" onChange={handleCertUpload} />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {certifications.map((cert, idx) => (
+                <span key={idx} className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                  {cert.name || 'Certification'}
+                </span>
               ))}
             </div>
           </div>

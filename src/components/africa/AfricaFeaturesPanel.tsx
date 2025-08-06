@@ -31,6 +31,7 @@ import {
   Banknote,
   PiggyBank
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface USSDSession {
   code: string;
@@ -153,14 +154,14 @@ const AfricaFeaturesPanel = () => {
   ];
 
   const handleUSSDAction = (code: string) => {
-    console.log(`USSD code dialed: ${code}`);
+    logger.info('USSD code dialed', { code, isOfflineMode }, 'AfricaFeaturesPanel');
     if (isOfflineMode) {
       setPendingUSSDActions(prev => prev + 1);
     }
   };
 
   const handleMobileMoneyAction = (action: string, amount?: number) => {
-    console.log(`Mobile money action: ${action}`, amount);
+    logger.info('Mobile money action requested', { action, amount }, 'AfricaFeaturesPanel');
   };
 
   const getText = (key: string): string => {
@@ -599,7 +600,7 @@ const AfricaFeaturesPanel = () => {
                 <div className="flex items-center justify-between">
                   <div className="w-full mr-4">
                     <div className="bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '65%' }}></div>
+                      <div className="bg-blue-600 h-2 rounded-full progress-65"></div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">65% complete</p>
                   </div>

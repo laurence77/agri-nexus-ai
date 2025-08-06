@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
 import { FinancialRecord, YieldRecord } from '@/types';
+import { logger } from '@/lib/logger';
 import {
   DollarSign,
   TrendingUp,
@@ -337,8 +338,8 @@ export function FinancialDashboard() {
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div 
-                        className="w-4 h-4 rounded-full" 
-                        style={{ backgroundColor: category.color }}
+                        className={`w-4 h-4 rounded-full`}
+                        style={{backgroundColor: category.color}}
                       />
                       <div>
                         <p className="font-medium">{category.name}</p>
@@ -485,7 +486,7 @@ interface FinancialReportsProps {
 function FinancialReports({ financialRecords, yieldRecords, summary }: FinancialReportsProps) {
   const exportReport = (type: 'pdf' | 'excel') => {
     // Simulate report generation
-    console.log(`Generating ${type} report...`);
+    logger.info('Report generation requested', { type }, 'FinancialDashboard');
     // In a real app, this would generate and download the report
   };
 
@@ -614,7 +615,7 @@ function FinancialRecordForm({ onSubmit }: { onSubmit: () => void }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Financial record submitted:', formData);
+    logger.info('Financial record submitted', { type: formData.type, category: formData.category, amount: formData.amount }, 'FinancialDashboard');
     onSubmit();
   };
 

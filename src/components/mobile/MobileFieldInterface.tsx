@@ -72,7 +72,11 @@ interface WorkerProfile {
 export function MobileFieldInterface() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [offlineData, setOfflineData] = useState<OfflineData[]>([]);
+  const [offlineData, setOfflineData] = useState<OfflineData[]>(() => {
+    // Load from localStorage on mount
+    const stored = localStorage.getItem('offlineData');
+    return stored ? JSON.parse(stored) : [];
+  });
   const [fieldTasks, setFieldTasks] = useState<FieldTask[]>([]);
   const [activeTask, setActiveTask] = useState<FieldTask | null>(null);
   const [worker, setWorker] = useState<WorkerProfile | null>(null);
@@ -110,6 +114,11 @@ export function MobileFieldInterface() {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // Persist offlineData to localStorage on change
+  useEffect(() => {
+    localStorage.setItem('offlineData', JSON.stringify(offlineData));
+  }, [offlineData]);
 
   const loadSampleData = () => {
     const sampleWorker: WorkerProfile = {

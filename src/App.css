@@ -40,3 +40,116 @@
 .read-the-docs {
   color: #888;
 }
+
+.support-bg-float {
+  animation-delay: 2s;
+}
+
+.animate-delay-2s {
+  animation-delay: 2s;
+}
+
+.progress-65 {
+  width: 65%;
+}
+
+/* Dynamic color utilities */
+.dynamic-bg-0 { background-color: #ef4444; }
+.dynamic-bg-1 { background-color: #f97316; }
+.dynamic-bg-2 { background-color: #eab308; }
+.dynamic-bg-3 { background-color: #22c55e; }
+.dynamic-bg-4 { background-color: #3b82f6; }
+.dynamic-bg-5 { background-color: #8b5cf6; }
+.dynamic-bg-6 { background-color: #ec4899; }
+
+/* Dynamic width utilities */
+[style*="--battery-width"] {
+  width: var(--battery-width);
+}
+
+/* Dynamic background image utilities */
+.cover-image {
+  background-image: var(--cover-image);
+}
+
+.product-image {
+  background-image: var(--product-image);
+}
+
+/* Progress bar utilities */
+.progress-bar {
+  width: var(--progress-width, 0%);
+}
+
+.battery-progress {
+  width: var(--battery-level, 0%);
+}
+
+/* Notification progress specific */
+.notification-progress {
+  width: var(--notification-progress, 0%);
+}
+
+/* Animation delay utilities */
+.animate-delay-1s { animation-delay: 1s; }
+.animate-delay-2s { animation-delay: 2s; }
+.animate-delay-3s { animation-delay: 3s; }
+.animate-delay-4s { animation-delay: 4s; }
+.animate-delay-5s { animation-delay: 5s; }
+
+/* Security: Prevent CSS injection attacks */
+* {
+  box-sizing: border-box;
+}
+
+/* Responsive width utilities for custom percentages */
+@media (min-width: 640px) {
+  .sm\:w-\[var\(--progress-width\)\] {
+    width: var(--progress-width, 0%);
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:w-\[var\(--progress-width\)\] {
+    width: var(--progress-width, 0%);
+  }
+}
+
+/* Utility for background images with fallback */
+.bg-\[image\:var\(--bg-image\)\] {
+  background-image: var(--bg-image, none);
+}
+
+/* Ensure all custom properties have fallbacks for accessibility */
+[style*="--progress-width"] {
+  width: var(--progress-width, 0%);
+  min-width: 0;
+  max-width: 100%;
+}
+
+[style*="--battery-level"] {
+  width: var(--battery-level, 0%);
+  min-width: 0;
+  max-width: 100%;
+}
+
+[style*="--notification-progress"] {
+  width: var(--notification-progress, 0%);
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Accessibility: Ensure focus visibility */
+.glass-button:focus,
+.glass-input:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Performance: Hardware acceleration for animations */
+.animate-float,
+.animate-pulse,
+.animate-spin {
+  transform: translateZ(0);
+  will-change: transform;
+}

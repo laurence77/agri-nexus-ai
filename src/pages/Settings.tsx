@@ -135,7 +135,7 @@ const Settings = () => {
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-slate-400/10 to-gray-400/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-gray-400/10 to-blue-400/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-gray-400/10 to-blue-400/10 rounded-full blur-3xl animate-float animate-delay-2s" />
       </div>
 
       {/* Header Navigation */}
@@ -329,11 +329,14 @@ const Settings = () => {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Primary Crop</label>
+                      <label htmlFor="primaryCrop" className="block text-sm font-medium text-gray-700 mb-2">Primary Crop</label>
                       <select
+                        id="primaryCrop"
                         value={settings.profile.primaryCrop}
                         onChange={(e) => updateSetting('profile', 'primaryCrop', e.target.value)}
                         className="glass-input w-full"
+                        aria-label="Select your primary crop type"
+                        title="Primary Crop"
                       >
                         <option value="maize">Maize</option>
                         <option value="beans">Beans</option>
@@ -510,13 +513,16 @@ const Settings = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                      <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-2">Language</label>
                       <div className="relative">
                         <Languages className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <select
+                          id="language"
                           value={settings.system.language}
                           onChange={(e) => updateSetting('system', 'language', e.target.value)}
                           className="glass-input w-full pl-10"
+                          aria-label="Select your preferred language"
+                          title="Language"
                         >
                           <option value="en">English</option>
                           <option value="sw">Kiswahili</option>
@@ -529,13 +535,16 @@ const Settings = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                      <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <select
+                          id="currency"
                           value={settings.system.currency}
                           onChange={(e) => updateSetting('system', 'currency', e.target.value)}
                           className="glass-input w-full pl-10"
+                          aria-label="Select your preferred currency"
+                          title="Currency"
                         >
                           <option value="KSH">Kenyan Shilling (KSH)</option>
                           <option value="USD">US Dollar (USD)</option>
@@ -548,13 +557,16 @@ const Settings = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
+                      <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
                       <div className="relative">
                         <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <select
+                          id="timezone"
                           value={settings.system.timezone}
                           onChange={(e) => updateSetting('system', 'timezone', e.target.value)}
                           className="glass-input w-full pl-10"
+                          aria-label="Select your timezone"
+                          title="Timezone"
                         >
                           <option value="Africa/Nairobi">East Africa Time (GMT+3)</option>
                           <option value="Africa/Lagos">West Africa Time (GMT+1)</option>
@@ -662,11 +674,14 @@ const Settings = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Session Timeout (minutes)</label>
+                      <label htmlFor="sessionTimeout" className="block text-sm font-medium text-gray-700 mb-2">Session Timeout (minutes)</label>
                       <select
+                        id="sessionTimeout"
                         value={settings.privacy.sessionTimeout}
                         onChange={(e) => updateSetting('privacy', 'sessionTimeout', e.target.value)}
                         className="glass-input w-full"
+                        aria-label="Select session timeout duration"
+                        title="Session Timeout"
                       >
                         <option value="15">15 minutes</option>
                         <option value="30">30 minutes</option>

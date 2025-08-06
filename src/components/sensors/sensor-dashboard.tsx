@@ -296,11 +296,11 @@ export function SensorDashboard({ farmId, fieldId }: SensorDashboardProps) {
                     <Battery className="h-4 w-4 text-gray-400" />
                     <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div 
-                        className={`h-2 rounded-full ${
+                        className={`h-2 rounded-full battery-progress ${
                           sensor.batteryLevel > 20 ? 'bg-green-500' : 
                           sensor.batteryLevel > 10 ? 'bg-yellow-500' : 'bg-red-500'
                         }`}
-                        style={{ width: `${sensor.batteryLevel}%` }}
+                        style={{ '--battery-level': `${sensor.batteryLevel}%` } as React.CSSProperties}
                       />
                     </div>
                     <span className="text-xs text-gray-500">{sensor.batteryLevel}%</span>

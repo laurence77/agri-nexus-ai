@@ -325,6 +325,8 @@ const Marketplace = () => {
           className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
             favorites.includes(product.id) ? 'bg-red-500 text-white' : 'bg-white/80 text-gray-600'
           }`}
+          aria-label={favorites.includes(product.id) ? 'Remove from favorites' : 'Add to favorites'}
+          title={favorites.includes(product.id) ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart className="w-4 h-4" />
         </button>
@@ -652,7 +654,7 @@ const Marketplace = () => {
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-green-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-emerald-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-emerald-400/20 rounded-full blur-3xl animate-float animate-delay-2s" />
       </div>
 
       <div className="pt-32 px-4 pb-8">

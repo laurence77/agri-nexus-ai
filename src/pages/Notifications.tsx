@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NotificationCenter from '@/components/notifications/notification-center';
 import { useNotifications } from '@/hooks/useNotifications';
+import { logger } from '@/lib/logger';
 import {
   Bell,
   BellRing,
@@ -91,7 +92,7 @@ const Notifications = () => {
   const sendTestNotification = (notification: any) => {
     const id = addNotification(notification);
     if (id) {
-      console.log(`Test notification sent: ${notification.title}`);
+      logger.info('Test notification sent', { title: notification.title }, 'Notifications');
     }
   };
 
@@ -115,7 +116,7 @@ const Notifications = () => {
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl animate-float animate-delay-2s" />
       </div>
 
       <div className="pt-32 px-4 pb-8">

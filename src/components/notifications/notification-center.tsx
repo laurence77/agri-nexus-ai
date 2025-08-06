@@ -34,6 +34,7 @@ import {
   Sun,
   Thermometer
 } from "lucide-react";
+import { registerPushNotifications, sendTestNotification } from './push-registration';
 
 interface Notification {
   id: string;
@@ -253,6 +254,15 @@ const NotificationCenter = () => {
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
     return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
+  const handleEnablePush = async () => {
+    const granted = await registerPushNotifications();
+    if (granted) {
+      alert('Push notifications enabled!');
+    } else {
+      alert('Push notifications not enabled.');
+    }
   };
 
   const renderNotificationSettings = () => (
@@ -602,6 +612,14 @@ const NotificationCenter = () => {
           )}
         </TabsContent>
       </Tabs>
+      <div className="mb-4 flex gap-2 items-center">
+        <Button onClick={handleEnablePush} variant="outline">
+          Enable Push Notifications
+        </Button>
+        <Button onClick={() => sendTestNotification('Test Notification', { body: 'This is a test.' })} variant="outline">
+          Send Test Notification
+        </Button>
+      </div>
     </div>
   );
 };
