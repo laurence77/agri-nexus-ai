@@ -1,4 +1,5 @@
 // Marketplace Service Types and Interfaces
+import { ProvenanceService, ProvenanceMetadata } from '../../lib/provenance';
 // Agricultural input marketplace with verified dealers and logistics
 
 export interface AgroDealer {
@@ -376,7 +377,7 @@ export class MarketplaceService {
     return response.json();
   }
 
-  async createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> {
+  async createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>, provenanceMeta?: ProvenanceMetadata): Promise<Product> {
     const response = await fetch(`${this.baseUrl}/products`, {
       method: 'POST',
       headers: {
@@ -390,10 +391,19 @@ export class MarketplaceService {
       throw new Error(`Failed to create product: ${response.statusText}`);
     }
 
-    return response.json();
-  }
+    const createdProduct = await response.json();
+    if (provenanceMeta) {
+      await ProvenanceService.recordRecordChanges(
+        'products',
+        createdProduct.id,
+        Object.fromEntries(Object.entries(createdProduct).map(([k, v]) => [k, { newValue: v }])),
+        provenanceMeta
+      );
+    }
+    return createdProduct;
+  
 
-  async updateProduct(productId: string, updates: Partial<Product>): Promise<Product> {
+  async updateProduct(productId: string, updates: Partial<Product>, provenanceMeta?: ProvenanceMetadata): Promise<Product> {
     const response = await fetch(`${this.baseUrl}/products/${productId}`, {
       method: 'PUT',
       headers: {
@@ -407,7 +417,16 @@ export class MarketplaceService {
       throw new Error(`Failed to update product: ${response.statusText}`);
     }
 
-    return response.json();
+    const updatedProduct = await response.json();
+    if (provenanceMeta) {
+      await ProvenanceService.recordRecordChanges(
+        'products',
+        productId,
+        Object.fromEntries(Object.entries(updates).map(([k, v]) => [k, { newValue: v }])),
+        provenanceMeta
+      );
+    }
+    return updatedProduct;
   }
 
   // Dealer Management
@@ -476,7 +495,7 @@ export class MarketplaceService {
   }
 
   // Order Management
-  async createOrder(order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<Order> {
+  async createOrder(order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>, provenanceMeta?: ProvenanceMetadata): Promise<Order> {
     const response = await fetch(`${this.baseUrl}/orders`, {
       method: 'POST',
       headers: {
@@ -490,7 +509,16 @@ export class MarketplaceService {
       throw new Error(`Failed to create order: ${response.statusText}`);
     }
 
-    return response.json();
+    const createdOrder = await response.json();
+    if (provenanceMeta) {
+      await ProvenanceService.recordRecordChanges(
+        'orders',
+        createdOrder.id,
+        Object.fromEntries(Object.entries(createdOrder).map(([k, v]) => [k, { newValue: v }])),
+        provenanceMeta
+      );
+    }
+    return createdOrder;
   }
 
   async getOrder(orderId: string): Promise<Order> {
@@ -508,7 +536,7 @@ export class MarketplaceService {
     return response.json();
   }
 
-  async updateOrderStatus(orderId: string, status: Order['status'], notes?: string): Promise<Order> {
+  async updateOrderStatus(orderId: string, status: Order['status'], notes?: string, provenanceMeta?: ProvenanceMetadata): Promise<Order> {
     const response = await fetch(`${this.baseUrl}/orders/${orderId}/status`, {
       method: 'PUT',
       headers: {
@@ -522,7 +550,16 @@ export class MarketplaceService {
       throw new Error(`Failed to update order status: ${response.statusText}`);
     }
 
-    return response.json();
+    const updatedOrder = await response.json();
+    if (provenanceMeta) {
+      await ProvenanceService.recordRecordChanges(
+        'orders',
+        orderId,
+        { status: { newValue: status }, ...(notes ? { notes: { newValue: notes } } : {}) },
+        provenanceMeta
+      );
+    }
+    return updatedOrder;
   }
 
   async getUserOrders(userId: string, filters?: {
@@ -560,7 +597,7 @@ export class MarketplaceService {
   }
 
   // Quote Management
-  async createQuote(quote: Omit<Quote, 'id' | 'createdAt' | 'updatedAt' | 'expiresAt'>): Promise<Quote> {
+  async createQuote(quote: Omit<Quote, 'id' | 'createdAt' | 'updatedAt' | 'expiresAt'>, provenanceMeta?: ProvenanceMetadata): Promise<Quote> {
     const response = await fetch(`${this.baseUrl}/quotes`, {
       method: 'POST',
       headers: {
@@ -595,7 +632,7 @@ export class MarketplaceService {
   }
 
   // Review Management
-  async createReview(review: Omit<Review, 'id' | 'createdAt' | 'updatedAt' | 'helpfulVotes'>): Promise<Review> {
+  async createReview(review: Omit<Review, 'id' | 'createdAt' | 'updatedAt' | 'helpfulVotes'>, provenanceMeta?: ProvenanceMetadata): Promise<Review> {
     const response = await fetch(`${this.baseUrl}/reviews`, {
       method: 'POST',
       headers: {
@@ -609,7 +646,16 @@ export class MarketplaceService {
       throw new Error(`Failed to create review: ${response.statusText}`);
     }
 
-    return response.json();
+    const createdReview = await response.json();
+    if (provenanceMeta) {
+      await ProvenanceService.recordRecordChanges(
+        'reviews',
+        createdReview.id,
+        Object.fromEntries(Object.entries(createdReview).map(([k, v]) => [k, { newValue: v }])),
+        provenanceMeta
+      );
+    }
+    return createdReview;
   }
 
   async getReviews(targetType: 'product' | 'dealer', targetId: string): Promise<Review[]> {
@@ -628,7 +674,7 @@ export class MarketplaceService {
   }
 
   // Delivery Management
-  async createDeliveryRoute(route: Omit<DeliveryRoute, 'id' | 'createdAt' | 'updatedAt' | 'trackingUpdates'>): Promise<DeliveryRoute> {
+  async createDeliveryRoute(route: Omit<DeliveryRoute, 'id' | 'createdAt' | 'updatedAt' | 'trackingUpdates'>, provenanceMeta?: ProvenanceMetadata): Promise<DeliveryRoute> {
     const response = await fetch(`${this.baseUrl}/delivery/routes`, {
       method: 'POST',
       headers: {
@@ -642,7 +688,16 @@ export class MarketplaceService {
       throw new Error(`Failed to create delivery route: ${response.statusText}`);
     }
 
-    return response.json();
+    const createdRoute = await response.json();
+    if (provenanceMeta) {
+      await ProvenanceService.recordRecordChanges(
+        'delivery_routes',
+        createdRoute.id,
+        Object.fromEntries(Object.entries(createdRoute).map(([k, v]) => [k, { newValue: v }])),
+        provenanceMeta
+      );
+    }
+    return createdRoute;
   }
 
   async trackDelivery(routeId: string): Promise<DeliveryRoute> {

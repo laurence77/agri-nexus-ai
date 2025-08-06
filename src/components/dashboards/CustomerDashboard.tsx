@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/multi-tenant-auth';
 import { DatabaseService } from '@/lib/supabase';
+import { ProvenanceTooltip } from '@/components/ui/provenance-tooltip';
 
 interface CustomerDashboardProps {
   className?: string;
@@ -234,6 +235,7 @@ export function CustomerDashboard({ className }: CustomerDashboardProps) {
         </div>
         <div className="flex items-center space-x-3">
           <select 
+            aria-label="Select timeframe"
             value={selectedTimeframe}
             onChange={(e) => setSelectedTimeframe(e.target.value as any)}
             className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
@@ -423,26 +425,43 @@ export function CustomerDashboard({ className }: CustomerDashboardProps) {
             <h3 className="text-lg font-semibold text-white mb-4">Inventory Status</h3>
             <div className="space-y-3">
               {data.inventory.slice(0, 3).map((item, index) => (
-                <div key={item.id} className="flex justify-between items-center">
-                  <div>
-                    <p className="text-white text-sm font-medium">{item.item_name}</p>
-                    <p className="text-gray-400 text-xs">{item.category}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-white text-sm">{item.current_stock} {item.unit}</p>
-                    <div className={cn(
-                      'text-xs',
-                      item.current_stock < item.minimum_stock ? 'text-red-400' :
-                      item.current_stock < item.minimum_stock * 2 ? 'text-yellow-400' :
-                      'text-green-400'
-                    )}>
-                      {item.current_stock < item.minimum_stock ? 'Low Stock' :
-                       item.current_stock < item.minimum_stock * 2 ? 'Getting Low' :
-                       'In Stock'}
-                    </div>
-                  </div>
-                </div>
-              ))}
+  <div key={item.id} className="flex justify-between items-center">
+    <div>
+      <p className="text-white text-sm font-medium">
+        <ProvenanceTooltip tableName="inventory_items" recordId={item.id} fieldName="item_name">
+          {item.item_name}
+        </ProvenanceTooltip>
+      </p>
+      <p className="text-gray-400 text-xs">
+        <ProvenanceTooltip tableName="inventory_items" recordId={item.id} fieldName="category">
+          {item.category}
+        </ProvenanceTooltip>
+      </p>
+    </div>
+    <div className="text-right">
+      <p className="text-white text-sm">
+        <ProvenanceTooltip tableName="inventory_items" recordId={item.id} fieldName="current_stock">
+          {item.current_stock}
+        </ProvenanceTooltip>{' '}
+        <ProvenanceTooltip tableName="inventory_items" recordId={item.id} fieldName="unit">
+          {item.unit}
+        </ProvenanceTooltip>
+      </p>
+      <div className={cn(
+        'text-xs',
+        item.current_stock < item.minimum_stock ? 'text-red-400' :
+        item.current_stock < item.minimum_stock * 2 ? 'text-yellow-400' :
+        'text-green-400'
+      )}>
+        <ProvenanceTooltip tableName="inventory_items" recordId={item.id} fieldName="minimum_stock">
+          {item.current_stock < item.minimum_stock ? 'Low Stock' :
+           item.current_stock < item.minimum_stock * 2 ? 'Getting Low' :
+           'In Stock'}
+        </ProvenanceTooltip>
+      </div>
+    </div>
+  </div>
+))}
             </div>
           </GlassCard>
         </div>

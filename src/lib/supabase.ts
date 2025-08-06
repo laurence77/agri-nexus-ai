@@ -361,7 +361,7 @@ export class RealtimeService {
     callback: (payload: any) => void,
     filters?: Record<string, any>
   ) {
-    let channel = supabase
+    const channel = supabase
       .channel(`${tableName}_changes`)
       .on(
         'postgres_changes',

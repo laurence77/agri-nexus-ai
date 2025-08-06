@@ -484,7 +484,7 @@ export class WeatherIntelligence {
   ): ExtremeEvent | null {
     const now = new Date();
     let timing = new Date(now.getTime() + 24 * 3600000); // Default to 24 hours
-    let severity = probability;
+    const severity = probability;
     let duration = 6; // Default 6 hours
 
     // Customize based on event type

@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/multi-tenant-auth';
 import { DatabaseService } from '@/lib/supabase';
+import { ProvenanceTooltip } from '@/components/ui/provenance-tooltip';
 
 interface AdminDashboardProps {
   className?: string;
@@ -360,6 +361,165 @@ export function AdminDashboard({ className }: AdminDashboardProps) {
 
       {/* Overview View */}
       {selectedView === 'overview' && (
+  <>
+    {/* Existing overview content here... */}
+    {/* Orders Table for provenance display */}
+    <GlassCard className="overflow-hidden mt-8">
+      <h3 className="text-lg font-semibold text-white mb-4">Recent Orders</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-white/5">
+            <tr>
+              <th className="text-left p-4 text-gray-300 font-medium">Order ID</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Status</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Amount</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Customer</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data.orders || []).map((order: any) => (
+              <tr key={order.id} className="border-t border-white/10">
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="id">
+                    <span>{order.id}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="status">
+                    <span>{order.status}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="total_amount">
+                    <span>{order.total_amount}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="customer">
+                    <span>{order.customer}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="created_at">
+                    <span>{order.created_at}</span>
+                  </ProvenanceTooltip>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </GlassCard>
+
+    {/* Reviews Table for provenance display */}
+    <GlassCard className="overflow-hidden mt-8">
+      <h3 className="text-lg font-semibold text-white mb-4">Recent Reviews</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-white/5">
+            <tr>
+              <th className="text-left p-4 text-gray-300 font-medium">Review ID</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Product</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Rating</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Reviewer</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Comment</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data.reviews || []).map((review: any) => (
+              <tr key={review.id} className="border-t border-white/10">
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="reviews" recordId={review.id} fieldName="id">
+                    <span>{review.id}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="reviews" recordId={review.id} fieldName="product">
+                    <span>{review.product}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="reviews" recordId={review.id} fieldName="rating">
+                    <span>{review.rating}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="reviews" recordId={review.id} fieldName="reviewer">
+                    <span>{review.reviewer}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="reviews" recordId={review.id} fieldName="comment">
+                    <span>{review.comment}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="reviews" recordId={review.id} fieldName="created_at">
+                    <span>{review.created_at}</span>
+                  </ProvenanceTooltip>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </GlassCard>
+  </>
+)
+  <>
+    {/* Existing overview content here... */}
+    {/* Orders Table for provenance display */}
+    <GlassCard className="overflow-hidden mt-8">
+      <h3 className="text-lg font-semibold text-white mb-4">Recent Orders</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-white/5">
+            <tr>
+              <th className="text-left p-4 text-gray-300 font-medium">Order ID</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Status</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Amount</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Customer</th>
+              <th className="text-left p-4 text-gray-300 font-medium">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data.orders || []).map((order: any) => (
+              <tr key={order.id} className="border-t border-white/10">
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="id">
+                    <span>{order.id}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="status">
+                    <span>{order.status}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="total_amount">
+                    <span>{order.total_amount}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="customer">
+                    <span>{order.customer}</span>
+                  </ProvenanceTooltip>
+                </td>
+                <td className="p-4">
+                  <ProvenanceTooltip tableName="orders" recordId={order.id} fieldName="created_at">
+                    <span>{order.created_at}</span>
+                  </ProvenanceTooltip>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </GlassCard>
+  </>
+)
         <>
           {/* Key Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">

@@ -105,6 +105,17 @@ class WalletService {
       .single();
 
     if (error) throw new Error(`Failed to create wallet: ${error.message}`);
+    // Provenance recording
+    const { ProvenanceService } = await import('@/lib/provenance');
+    await ProvenanceService.recordRecordChanges('wallets', data.id, {
+      tenant_id: { newValue: tenantId },
+      user_id: { newValue: userId },
+      balance: { newValue: 0 },
+      currency: { newValue: currency },
+      credit_limit: { newValue: initialCredit },
+      available_credit: { newValue: initialCredit },
+      status: { newValue: 'active' }
+    }, { source: 'system', entered_by: userId, timestamp: new Date().toISOString() });
     return data;
   }
 
@@ -206,6 +217,18 @@ class WalletService {
         })
         .eq('id', transaction.id);
 
+      // Provenance recording
+      const { ProvenanceService } = await import('@/lib/provenance');
+      await ProvenanceService.recordRecordChanges('wallet_transactions', transaction.id, {
+        wallet_id: { newValue: walletId },
+        transaction_type: { newValue: 'deposit' },
+        amount: { newValue: amount },
+        currency: { newValue: wallet.currency },
+        description: { newValue: `Wallet top-up via mobile money` },
+        reference: { newValue: transaction.reference },
+        status: { newValue: 'pending' },
+        metadata: { newValue: JSON.stringify(transaction.metadata) }
+      }, { source: 'system', entered_by: wallet.user_id, timestamp: new Date().toISOString() });
       return { ...transaction, metadata: { ...transaction.metadata, payment_transaction_id: paymentResponse.transactionId } };
 
     } catch (error) {
@@ -258,6 +281,12 @@ class WalletService {
       .eq('id', transactionId);
 
     if (txUpdateError) throw new Error(`Failed to update transaction: ${txUpdateError.message}`);
+    // Provenance recording
+    const { ProvenanceService } = await import('@/lib/provenance');
+    await ProvenanceService.recordRecordChanges('wallet_transactions', transactionId, {
+      status: { newValue: 'completed' },
+      processed_at: { newValue: new Date().toISOString() }
+    }, { source: 'system', entered_by: transaction.wallet.user_id, timestamp: new Date().toISOString() });
   }
 
   /**
@@ -327,7 +356,18 @@ class WalletService {
       .eq('id', walletId);
 
     if (walletUpdateError) throw new Error(`Failed to update wallet: ${walletUpdateError.message}`);
-
+    // Provenance recording
+    const { ProvenanceService } = await import('@/lib/provenance');
+    await ProvenanceService.recordRecordChanges('wallet_transactions', transaction.id, {
+      wallet_id: { newValue: walletId },
+      transaction_type: { newValue: 'payment' },
+      amount: { newValue: -amount },
+      currency: { newValue: wallet.currency },
+      description: { newValue: description },
+      reference: { newValue: reference },
+      status: { newValue: 'completed' },
+      metadata: { newValue: JSON.stringify(metadata) }
+    }, { source: 'system', entered_by: wallet.user_id, timestamp: new Date().toISOString() });
     return transaction;
   }
 
@@ -412,7 +452,12 @@ class WalletService {
           paid_at: new Date().toISOString()
         })
         .eq('id', invoiceId);
-
+      // Provenance recording
+      const { ProvenanceService } = await import('@/lib/provenance');
+      await ProvenanceService.recordRecordChanges('invoices', invoiceId, {
+        status: { newValue: 'paid' },
+        paid_at: { newValue: new Date().toISOString() }
+      }, { source: 'system', entered_by: invoice.recipient_id, timestamp: new Date().toISOString() });
     } catch (error) {
       // Mark invoice as overdue if payment failed
       await supabase

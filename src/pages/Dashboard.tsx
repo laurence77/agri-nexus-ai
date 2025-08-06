@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import NotificationWidget from "@/components/notifications/notification-widget";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useNavigate } from 'react-router-dom';
+import { ProvenanceViewer } from '@/components/ui/provenance-viewer';
 import {
   MapPin,
   Droplets,
@@ -387,6 +388,15 @@ export default function Dashboard() {
         onClose={() => setShowNotifications(false)}
         onOpenCenter={() => navigate('/notifications')}
       />
+
+      {/* Data Provenance Section */}
+      <div className="max-w-3xl mx-auto mt-12">
+        <ProvenanceViewer
+          tableName="user_settings"
+          recordId={typeof window !== 'undefined' ? (localStorage.getItem('user_email') || 'demo-user') : 'demo-user'}
+          showValue={true}
+        />
+      </div>
     </div>
   );
 }

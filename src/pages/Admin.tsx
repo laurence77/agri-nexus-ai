@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdminRoute } from '@/components/auth/protected-route';
 import { UserManagement } from '@/components/admin/user-management';
 import Navigation from '@/components/layout/Navigation';
+import { ProvenanceViewer } from '@/components/ui/provenance-viewer';
 import {
   Users,
   Shield,
@@ -300,15 +301,25 @@ function AdminDashboardContent() {
             </Card>
           </TabsContent>
         </Tabs>
+      {/* Data Provenance Section */}
+      <div className="max-w-3xl mx-auto mt-12">
+        <ProvenanceViewer
+          tableName="admin_exports"
+          recordId={typeof window !== 'undefined' ? (localStorage.getItem('user_email') || 'demo-user') : 'demo-user'}
+          showValue={true}
+        />
       </div>
     </div>
+  </div>
   );
 }
 
-export default function AdminDashboard() {
+function AdminDashboard() {
   return (
     <AdminRoute>
       <AdminDashboardContent />
     </AdminRoute>
   );
 }
+
+export default AdminDashboard;

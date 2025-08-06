@@ -295,7 +295,7 @@ export const schedulingUtils = {
     const endTime = new Date(date);
     endTime.setHours(endHour, endMinute, 0, 0);
     
-    let currentTime = new Date(startTime);
+    const currentTime = new Date(startTime);
     
     while (currentTime.getTime() + (duration * 60000) <= endTime.getTime()) {
       const slotEnd = new Date(currentTime.getTime() + (duration * 60000));
@@ -415,7 +415,7 @@ export const schedulingUtils = {
     // Simple nearest neighbor algorithm for route optimization
     const optimized = [];
     let currentLocation = baseLocation;
-    let remaining = [...visits];
+    const remaining = [...visits];
     
     while (remaining.length > 0) {
       let nearestIndex = 0;

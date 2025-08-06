@@ -108,11 +108,30 @@ const Onboarding = () => {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
       // Complete onboarding and redirect to dashboard
+      try {
+        // Use email or phone as user id if available
+        const userId = formData.personalInfo.email || formData.personalInfo.phone || 'unknown';
+        const { ProvenanceService } = await import('@/lib/provenance');
+        // Flatten all fields for provenance
+        const changes: Record<string, any> = {};
+        Object.entries(formData).forEach(([section, fields]) => {
+          Object.entries(fields as any).forEach(([key, value]) => {
+            changes[`${section}.${key}`] = { newValue: value };
+          });
+        });
+        await ProvenanceService.recordRecordChanges('onboarding', userId, changes, {
+          source: 'user',
+          entered_by: userId,
+          timestamp: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error('Failed to record provenance for onboarding:', err);
+      }
       console.log('Onboarding completed:', formData);
       navigate('/dashboard');
     }

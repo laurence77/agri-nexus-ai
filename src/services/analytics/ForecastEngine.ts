@@ -387,7 +387,7 @@ class ForecastEngine {
 
   private assessDiseaseRisk(disease: any, weatherForecast: WeatherForecast[], farmId?: string): DiseaseRiskForecast {
     let riskScore = 0;
-    let contributingFactors: string[] = [];
+    const contributingFactors: string[] = [];
 
     // Analyze weather conditions
     const avgHumidity = weatherForecast.reduce((sum, day) => sum + day.humidity, 0) / weatherForecast.length;

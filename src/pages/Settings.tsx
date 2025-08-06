@@ -96,13 +96,40 @@ const Settings = () => {
     }
   });
 
-  const handleSave = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      // Show success notification
-    }, 2000);
-  };
+  const handleSave = async () => {
+  setIsSaving(true);
+  // Save logic would go here (e.g., send to backend)
+  try {
+    const userId = settings.profile.email || 'unknown'; // Use email as user id
+    const categories = Object.keys(settings) as Array<keyof typeof settings>;
+    for (const category of categories) {
+      const fields = settings[category];
+      for (const key in fields) {
+        if (fields.hasOwnProperty(key)) {
+          // Record provenance for each field
+          await import("@/lib/provenance").then(({ ProvenanceService }) => {
+            ProvenanceService.recordFieldChange(
+              "user_settings",
+              userId,
+              `${category}.${key}`,
+              fields[key],
+              {
+                source: 'user',
+                entered_by: userId
+              }
+            );
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Failed to record provenance for settings:', err);
+  }
+  setTimeout(() => {
+    setIsSaving(false);
+    // Show success notification
+  }, 2000);
+};
 
   const handleReset = () => {
     // Reset to default settings

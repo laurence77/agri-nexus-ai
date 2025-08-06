@@ -23,8 +23,8 @@ interface LogEntry {
 }
 
 class SecureLogger {
-  private isDevelopment = process.env.NODE_ENV === 'development';
-  private logLevel: LogLevel = (process.env.REACT_APP_LOG_LEVEL as LogLevel) || 'info';
+  private isDevelopment = import.meta.env.MODE === 'development';
+  private logLevel: LogLevel = (import.meta.env.VITE_LOG_LEVEL as LogLevel) || 'info';
   
   // Sensitive data patterns to filter from logs
   private sensitivePatterns = [

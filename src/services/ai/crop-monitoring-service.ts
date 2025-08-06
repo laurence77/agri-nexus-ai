@@ -466,7 +466,7 @@ export class CropMonitoringService {
     try {
       const predictions: PredictiveAnalytics['predictions'] = [];
       const recommendations: string[] = [];
-      let accuracy = 0.85; // Base accuracy
+      const accuracy = 0.85; // Base accuracy
 
       switch (predictionType) {
         case 'disease_risk':

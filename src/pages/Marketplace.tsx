@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { ProvenanceTooltip } from "@/components/ui/provenance-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -334,7 +335,9 @@ const Marketplace = () => {
 
       <div className="space-y-3">
         <div>
-          <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
+          <ProvenanceTooltip tableName="products" recordId={product.id} fieldName="name">
+  <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
+</ProvenanceTooltip>
           <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
         </div>
 
@@ -343,18 +346,26 @@ const Marketplace = () => {
             <p className="text-2xl font-bold text-green-600">
               {formatCurrency(product.price, product.currency)}/{product.unit}
             </p>
-            <p className="text-xs text-gray-600">{product.quantity} {product.unit} available</p>
+            <ProvenanceTooltip tableName="products" recordId={product.id} fieldName="quantity">
+  <p className="text-xs text-gray-600">{product.quantity} {product.unit} available</p>
+</ProvenanceTooltip>
           </div>
-          <Badge className="glass-badge info">{product.quality}</Badge>
+          <ProvenanceTooltip tableName="products" recordId={product.id} fieldName="quality">
+  <Badge className="glass-badge info">{product.quality}</Badge>
+</ProvenanceTooltip>
         </div>
 
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-yellow-500 fill-current" />
-            <span className="text-sm font-medium">{product.seller.rating}</span>
+            <ProvenanceTooltip tableName="products" recordId={product.id} fieldName="seller.rating">
+  <span className="text-sm font-medium">{product.seller.rating}</span>
+</ProvenanceTooltip>
           </div>
           <span className="text-sm text-gray-600">•</span>
-          <span className="text-sm text-gray-600">{product.seller.name}</span>
+          <ProvenanceTooltip tableName="products" recordId={product.id} fieldName="seller.name">
+  <span className="text-sm text-gray-600">{product.seller.name}</span>
+</ProvenanceTooltip>
           {product.seller.verified && (
             <CheckCircle className="w-4 h-4 text-blue-500" />
           )}
