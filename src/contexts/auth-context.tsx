@@ -152,11 +152,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Email and password are required');
       }
 
-      // Allow username-only login when demo mode is enabled
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrUsername);
-      if (!isEmail && import.meta.env.VITE_DEMO_MODE !== 'true') {
-        throw new Error('Invalid email format');
-      }
+      // In demo mode, allow username (no email format required)
+      // Outside demo mode, still allow non-email usernames for flexibility
+      // so we do not enforce email regex here.
 
       // Simulated API call with security measures
       const response = await simulateSecureLogin(emailOrUsername, password, mfaCode);

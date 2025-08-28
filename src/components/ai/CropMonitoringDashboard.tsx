@@ -425,6 +425,8 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
           <select
             value={selectedField}
             onChange={(e) => setSelectedField(e.target.value)}
+            title="Select field"
+            aria-label="Select field"
             className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
           >
             <option value="">Select Field</option>
