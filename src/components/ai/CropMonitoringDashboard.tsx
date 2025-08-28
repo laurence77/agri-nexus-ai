@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import './CropMonitoringDashboard.css';
 import { cn } from '@/lib/utils';
 import { GlassCard, GlassButton } from '@/components/glass';
 import { 
@@ -72,7 +73,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
     previewUrl: null,
     analyzing: false
   });
-  const [fields, setFields] = useState<Array<Record<string, unknown>>>([]);
+  const [fields, setFields] = useState<Array<{ id: string; field_name: string }>>([]);
   const [modelStatus, setModelStatus] = useState<{
     diseaseModel: boolean;
     ndviModel: boolean;
@@ -105,7 +106,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
       const response = await fetch(`/api/fields?tenant_id=${tenantId}`);
       if (response.ok) {
         const fieldsData = await response.json();
-        setFields(fieldsData);
+        setFields(fieldsData as Array<{ id: string; field_name: string }>);
         if (fieldsData.length > 0 && !selectedField) {
           setSelectedField(fieldsData[0].id);
         }
@@ -154,33 +155,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
     }
   }, [selectedField, loadMonitoringData]);
 
-  const loadMonitoringData = async () => {
-    if (!selectedField) return;
-
-    setData(prev => ({ ...prev, isLoading: true }));
-
-    try {
-      // Load all monitoring data in parallel
-      const [diseaseDetections, satelliteAnalysis, sensorData, predictions] = await Promise.all([
-        loadDiseaseDetections(),
-        loadSatelliteAnalysis(),
-        loadSensorData(),
-        loadPredictions()
-      ]);
-
-      setData({
-        diseaseDetections,
-        satelliteAnalysis,
-        sensorData,
-        predictions,
-        isLoading: false,
-        lastUpdated: new Date()
-      });
-    } catch (error) {
-      console.error('Error loading monitoring data:', error);
-      setData(prev => ({ ...prev, isLoading: false }));
-    }
-  };
+  // removed duplicate loadMonitoringData declaration (useCallback above is the source of truth)
 
   const loadDiseaseDetections = async (): Promise<DiseaseDetectionResult[]> => {
     // In production, this would fetch from database
@@ -422,7 +397,9 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
         </div>
         
         <div className="flex items-center space-x-3">
+          <label htmlFor="field-select" className="sr-only">Select field</label>
           <select
+            id="field-select"
             value={selectedField}
             onChange={(e) => setSelectedField(e.target.value)}
             title="Select field"
@@ -436,9 +413,8 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
               </option>
             ))}
           </select>
-          
           <GlassButton
-            variant="secondary"
+            variant="ghost"
             onClick={loadMonitoringData}
             disabled={data.isLoading || !selectedField}
           >
@@ -591,12 +567,12 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                       {data.satelliteAnalysis.yieldPrediction.estimatedYield.toLocaleString()} {data.satelliteAnalysis.yieldPrediction.unit}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-600/30 rounded-full h-2">
-                    <div 
-                      className="h-2 bg-green-400 rounded-full"
-                      style={{ width: `${data.satelliteAnalysis.yieldPrediction.confidence * 100}%` }}
-                    />
-                  </div>
+                  <progress
+                    className="progress progress--green"
+                    max={100}
+                    value={data.satelliteAnalysis.yieldPrediction.confidence * 100}
+                    aria-label="Predicted yield confidence"
+                  />
                   <div className="text-xs text-gray-400 mt-1">
                     Confidence: {(data.satelliteAnalysis.yieldPrediction.confidence * 100).toFixed(0)}%
                   </div>
@@ -683,7 +659,9 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
               {/* Upload/Camera Controls */}
               <div className="space-y-4">
                 <div className="flex space-x-3">
+                  <label htmlFor="disease-upload" className="sr-only">Upload crop image</label>
                   <input
+                    id="disease-upload"
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
@@ -701,7 +679,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                   </GlassButton>
                   
                   <GlassButton
-                    variant="secondary"
+                    variant="ghost"
                     onClick={imageCapture.isCapturing ? captureImage : startCamera}
                     disabled={imageCapture.analyzing}
                   >
@@ -711,7 +689,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                 </div>
 
                 {/* Camera/Preview */}
-                <div className="relative bg-black/20 rounded-lg overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                <div className="relative bg-black/20 rounded-lg overflow-hidden aspect-4-3">
                   {imageCapture.isCapturing ? (
                     <video
                       ref={videoRef}
@@ -808,7 +786,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-white">Satellite Analysis</h3>
               <GlassButton
-                variant="secondary"
+                variant="ghost"
                 onClick={refreshSatelliteData}
                 disabled={data.isLoading}
               >
@@ -827,12 +805,12 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                   {data.satelliteAnalysis.ndviScore.toFixed(3)}
                 </div>
                 <div className="text-gray-300 text-sm">NDVI Score</div>
-                <div className="w-full bg-gray-600/30 rounded-full h-2 mt-3">
-                  <div 
-                    className="h-2 bg-green-400 rounded-full"
-                    style={{ width: `${(data.satelliteAnalysis.ndviScore + 1) * 50}%` }}
-                  />
-                </div>
+                <progress
+                  className="progress progress--green mt-3"
+                  max={100}
+                  value={(data.satelliteAnalysis.ndviScore + 1) * 50}
+                  aria-label="NDVI score"
+                />
               </div>
 
               {/* Vegetation Health */}
@@ -871,12 +849,12 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                       {(data.satelliteAnalysis.stressIndicators.waterStress * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-600/30 rounded-full h-2 mt-2">
-                    <div 
-                      className="h-2 bg-blue-400 rounded-full"
-                      style={{ width: `${data.satelliteAnalysis.stressIndicators.waterStress * 100}%` }}
-                    />
-                  </div>
+                  <progress
+                    className="progress progress--blue mt-2"
+                    max={100}
+                    value={data.satelliteAnalysis.stressIndicators.waterStress * 100}
+                    aria-label="Water stress"
+                  />
                 </div>
 
                 <div className="bg-black/20 rounded-lg p-4">
@@ -886,12 +864,12 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                       {(data.satelliteAnalysis.stressIndicators.nutrientDeficiency * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-600/30 rounded-full h-2 mt-2">
-                    <div 
-                      className="h-2 bg-yellow-400 rounded-full"
-                      style={{ width: `${data.satelliteAnalysis.stressIndicators.nutrientDeficiency * 100}%` }}
-                    />
-                  </div>
+                  <progress
+                    className="progress progress--yellow mt-2"
+                    max={100}
+                    value={data.satelliteAnalysis.stressIndicators.nutrientDeficiency * 100}
+                    aria-label="Nutrient deficiency"
+                  />
                 </div>
 
                 <div className="bg-black/20 rounded-lg p-4">
@@ -901,12 +879,12 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
                       {(data.satelliteAnalysis.stressIndicators.diseaseRisk * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-600/30 rounded-full h-2 mt-2">
-                    <div 
-                      className="h-2 bg-red-400 rounded-full"
-                      style={{ width: `${data.satelliteAnalysis.stressIndicators.diseaseRisk * 100}%` }}
-                    />
-                  </div>
+                  <progress
+                    className="progress progress--red mt-2"
+                    max={100}
+                    value={data.satelliteAnalysis.stressIndicators.diseaseRisk * 100}
+                    aria-label="Disease risk"
+                  />
                 </div>
               </div>
             </div>
@@ -950,7 +928,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-white">IoT Sensor Data</h3>
               <GlassButton
-                variant="secondary"
+                variant="ghost"
                 onClick={processSensorData}
                 disabled={data.sensorData.length === 0}
               >

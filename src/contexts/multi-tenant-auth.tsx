@@ -10,6 +10,9 @@ interface AuthContextType {
   profile: Profile | null;
   tenant: Tenant | null;
   session: Session | null;
+  // Derived conveniences
+  tenantId: string | null;
+  userRole: AgriculturalRole | null;
   
   // Loading states
   loading: boolean;
@@ -384,6 +387,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     profile,
     tenant,
     session,
+    // Derived conveniences
+    tenantId: profile?.tenant_id ?? tenant?.id ?? null,
+    userRole: profile?.role ?? null,
     
     // Loading states
     loading,
