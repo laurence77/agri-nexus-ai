@@ -128,6 +128,43 @@ Notes:
 - To use a custom domain, add your domain in Settings → Pages and create a `CNAME` DNS record pointing to `<user>.github.io`.
 - If you host at the repository root (user/org sites), no subpath is used.
 
+### Local API Server (Payments)
+
+For secure payment flows, a tiny Node server proxies Paystack requests so secrets never hit the browser.
+
+- Start server: `npm run server` (defaults to `http://localhost:3001`)
+- Configure client to call it via `VITE_API_BASE_URL` in `.env`
+- Endpoints:
+  - Paystack:
+    - `POST /api/payments/paystack/init`
+    - `GET /api/payments/paystack/verify/:reference`
+  - Korapay (proxy):
+    - `POST /api/payments/korapay/charges/initialize`
+    - `GET /api/payments/korapay/charges/:reference`
+    - `POST /api/payments/korapay/disbursements/single`
+    - `POST /webhooks/korapay` (optional signature verify)
+  - M-Pesa:
+    - `POST /api/payments/mpesa/stkpush`
+    - `GET /api/payments/mpesa/status/:checkoutRequestId`
+  - MTN MoMo:
+    - `POST /api/payments/mtn-momo/request`
+    - `GET /api/payments/mtn-momo/status/:referenceId`
+
+Server env required (not exposed to client):
+
+```
+PAYSTACK_SECRET_KEY=sk_live_...
+```
+
+In production, host these endpoints on a real backend (serverless or container).
+
+### End-to-end Tests
+
+Playwright is configured to build and preview the site, then run tests in CI.
+
+- Run locally: `npx playwright install && npx playwright test`
+- Config: `playwright.config.ts` (serves `vite preview` on `:4173`)
+
 ## 📚 Documentation
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory and deployed to GitHub Pages:

@@ -74,20 +74,7 @@ export class MobileMoneyService {
     }
   ];
 
-  private readonly apiConfig = {
-    korapay: {
-      baseUrl: 'https://api.korapay.com/merchant/api/v1',
-      secretKey: process.env.KORAPAY_SECRET_KEY!,
-    },
-    flutterwave: {
-      baseUrl: 'https://api.flutterwave.com/v3',
-      secretKey: process.env.FLW_SECRET_KEY!,
-    },
-    paystack: {
-      baseUrl: 'https://api.paystack.co',
-      secretKey: process.env.PAYSTACK_SECRET_KEY!,
-    }
-  };
+  private readonly apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
 
   /**
    * Detect mobile money provider based on phone number and country
@@ -197,16 +184,7 @@ export class MobileMoneyService {
    */
   async checkPaymentStatus(transactionId: string): Promise<PaymentResponse> {
     try {
-      const response = await fetch(
-        `${this.apiConfig.korapay.baseUrl}/charges/${transactionId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.apiConfig.korapay.secretKey}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await fetch(`${this.apiBase}/payments/korapay/charges/${transactionId}`);
 
       if (!response.ok) {
         throw new Error(`Payment status check failed: ${response.statusText}`);
@@ -325,7 +303,8 @@ export class MobileMoneyService {
         name: request.metadata?.customerName || 'Agricultural Platform User',
         email: request.metadata?.customerEmail || 'user@agriplatform.com'
       },
-      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/webhook/korapay`,
+      // Notification handled server-side; do not expose webhook URL in client
+      notification_url: undefined as any,
       metadata: {
         farm_id: request.metadata?.farmId,
         tenant_id: request.metadata?.tenantId,
@@ -335,12 +314,9 @@ export class MobileMoneyService {
     };
 
     try {
-      const response = await fetch(`${this.apiConfig.korapay.baseUrl}/charges/initialize`, {
+      const response = await fetch(`${this.apiBase}/payments/korapay/charges/initialize`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiConfig.korapay.secretKey}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
@@ -386,12 +362,9 @@ export class MobileMoneyService {
     };
 
     try {
-      const response = await fetch(`${this.apiConfig.korapay.baseUrl}/disbursements/single`, {
+      const response = await fetch(`${this.apiBase}/payments/korapay/disbursements/single`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiConfig.korapay.secretKey}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 

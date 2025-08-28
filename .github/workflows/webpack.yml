@@ -30,3 +30,23 @@ jobs:
 
     - name: Build (Vite)
       run: npm run build
+
+    - name: Start API server (background)
+      run: |
+        nohup npm run server >/dev/null 2>&1 &
+        echo $! > server.pid
+        sleep 2
+        curl -f http://localhost:3001/healthz
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright tests
+      env:
+        CI: true
+      run: npx playwright test
+
+    - name: Stop API server
+      if: always()
+      run: |
+        if [ -f server.pid ]; then kill $(cat server.pid) || true; fi

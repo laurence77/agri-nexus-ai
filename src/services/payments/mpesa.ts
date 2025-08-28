@@ -392,9 +392,9 @@ export class MpesaService {
 export function createMpesaConfig(env: 'sandbox' | 'production'): Partial<MpesaConfig> {
   return {
     environment: env,
-    callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/mpesa/callback`,
-    resultUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/mpesa/result`,
-    timeoutUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/mpesa/timeout`
+    callbackUrl: `${import.meta.env.VITE_APP_URL || ''}/api/payments/mpesa/callback`,
+    resultUrl: `${import.meta.env.VITE_APP_URL || ''}/api/payments/mpesa/result`,
+    timeoutUrl: `${import.meta.env.VITE_APP_URL || ''}/api/payments/mpesa/timeout`
   };
 }
 

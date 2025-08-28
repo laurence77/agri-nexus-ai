@@ -1,7 +1,6 @@
 interface PaystackConfig {
   publicKey: string;
-  secretKey: string;
-  baseUrl: string;
+  apiBase: string; // our server base, e.g., http://localhost:3001
 }
 
 interface PaystackCustomer {
@@ -101,13 +100,11 @@ export class PaystackService {
 
   constructor() {
     this.config = {
-      publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
-      secretKey: process.env.PAYSTACK_SECRET_KEY || '',
-      baseUrl: 'https://api.paystack.co'
+      publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '',
+      apiBase: import.meta.env.VITE_API_BASE_URL || '/api'
     };
-
-    if (!this.config.publicKey || !this.config.secretKey) {
-      console.warn('Paystack API keys not configured. Please set NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY and PAYSTACK_SECRET_KEY environment variables.');
+    if (!this.config.publicKey) {
+      console.warn('VITE_PAYSTACK_PUBLIC_KEY is not set. Paystack popup may fail to initialize.');
     }
   }
 
@@ -116,12 +113,9 @@ export class PaystackService {
    */
   async initializeTransaction(transaction: PaystackTransaction): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/transaction/initialize`, {
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/init`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...transaction,
           reference: transaction.reference || this.generateReference(),
@@ -146,12 +140,7 @@ export class PaystackService {
    */
   async verifyTransaction(reference: string): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/transaction/verify/${reference}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-        },
-      });
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/verify/${reference}`);
 
       const data = await response.json();
 
@@ -171,12 +160,9 @@ export class PaystackService {
    */
   async createCustomer(customer: PaystackCustomer): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/customer`, {
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/customer`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customer),
       });
 
@@ -198,12 +184,7 @@ export class PaystackService {
    */
   async getCustomer(emailOrCode: string): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/customer/${emailOrCode}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-        },
-      });
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/customer/${emailOrCode}`);
 
       const data = await response.json();
 
@@ -223,12 +204,9 @@ export class PaystackService {
    */
   async createPlan(plan: PaystackPlan): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/plan`, {
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/plan`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(plan),
       });
 
@@ -250,12 +228,7 @@ export class PaystackService {
    */
   async getPlans(): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/plan`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-        },
-      });
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/plan`);
 
       const data = await response.json();
 
@@ -284,12 +257,9 @@ export class PaystackService {
         subscriptionData.authorization = authorization;
       }
 
-      const response = await fetch(`${this.config.baseUrl}/subscription`, {
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/subscription`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(subscriptionData),
       });
 
@@ -311,12 +281,7 @@ export class PaystackService {
    */
   async getCustomerSubscriptions(customerCode: string): Promise<any> {
     try {
-      const response = await fetch(`${this.config.baseUrl}/subscription?customer=${customerCode}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.config.secretKey}`,
-        },
-      });
+      const response = await fetch(`${this.config.apiBase}/payments/paystack/subscription?customer=${customerCode}`);
 
       const data = await response.json();
 
@@ -439,19 +404,9 @@ export class PaystackService {
   /**
    * Verify webhook signature
    */
-  verifyWebhookSignature(payload: string, signature: string): boolean {
-    try {
-      const crypto = require('crypto');
-      const hash = crypto
-        .createHmac('sha512', this.config.secretKey)
-        .update(payload, 'utf-8')
-        .digest('hex');
-      
-      return hash === signature;
-    } catch (error) {
-      console.error('Error verifying webhook signature:', error);
-      return false;
-    }
+  verifyWebhookSignature(_payload: string, _signature: string): boolean {
+    console.warn('verifyWebhookSignature should be handled server-side.');
+    return false;
   }
 
   /**

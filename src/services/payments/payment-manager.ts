@@ -132,7 +132,7 @@ export class PaymentManager {
               ...this.config.mtnMomo!,
               targetEnvironment: marketConfig.targetEnvironment,
               currency: marketConfig.currency,
-              callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/mtn-momo/callback`
+              callbackUrl: `${import.meta.env.VITE_APP_URL || ''}/api/payments/mtn-momo/callback`
             });
             this.mtnMomoServices.set(market, service);
           }

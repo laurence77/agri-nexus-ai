@@ -519,7 +519,7 @@ export function createMtnMomoConfig(
     environment,
     targetEnvironment: marketConfig.targetEnvironment,
     currency: marketConfig.currency,
-    callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/payments/mtn-momo/callback`
+    callbackUrl: `${import.meta.env.VITE_APP_URL || ''}/api/payments/mtn-momo/callback`
   };
 }
 
