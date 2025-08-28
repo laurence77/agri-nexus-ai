@@ -46,6 +46,10 @@ jobs:
         env:
           # Also export for vite.config.ts consumers
           BASE_PATH: ${{ steps.base.outputs.base_path }}
+          # Demo-friendly defaults for client build
+          VITE_DEMO_MODE: 'true'
+          VITE_SUPABASE_URL: 'https://demo.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'demo-key'
         run: |
           echo "Using base: $BASE_PATH"
           npm run build -- --base "$BASE_PATH"

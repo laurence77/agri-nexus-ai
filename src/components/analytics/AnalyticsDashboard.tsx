@@ -279,6 +279,8 @@ export function AnalyticsDashboard() {
             <select
               value={selectedFarm}
               onChange={(e) => setSelectedFarm(e.target.value)}
+              title="Select farm"
+              aria-label="Select farm"
               className="glass-input"
             >
               {farms.map(farm => (

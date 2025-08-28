@@ -829,6 +829,7 @@ export function AgentManagement() {
                 <select
                   id="filterRole"
                   aria-label="Filter by role"
+                  title="Filter by role"
                   className="px-3 py-2 border border-gray-300 rounded-md"
                   value={filterRole}
                   onChange={(e) => setFilterRole(e.target.value)}
@@ -844,6 +845,7 @@ export function AgentManagement() {
                 <select
                   id="filterAgentStatus"
                   aria-label="Filter by status"
+                  title="Filter by status"
                   className="px-3 py-2 border border-gray-300 rounded-md"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
