@@ -106,6 +106,44 @@ EXPOSE 8080
 CMD ["npm", "run", "preview"]
 ```
 
+### GitHub Pages
+
+This repo is preconfigured to deploy to GitHub Pages using Actions.
+
+- Default branch: `main`
+- Output folder: `dist/`
+- SPA routing: `404.html` fallback is included
+
+Steps:
+
+1. Push to `main` (or trigger manually in the Actions tab) to build and publish.
+2. In your repository Settings → Pages, set Source to “GitHub Actions”.
+3. Your site will be available at:
+   - User/org site: `https://<user>.github.io/` (repo named `<user>.github.io`)
+   - Project site: `https://<user>.github.io/<repo>/` (any other repo name)
+
+Notes:
+
+- The workflow automatically sets the correct base path for project sites.
+- To use a custom domain, add your domain in Settings → Pages and create a `CNAME` DNS record pointing to `<user>.github.io`.
+- If you host at the repository root (user/org sites), no subpath is used.
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) directory and deployed to GitHub Pages:
+
+- **[User Account Types & Roles](docs/user-account-types.md)** - Complete guide to all 14+ user roles and permission system
+- **[Platform Documentation](docs/)** - Full feature documentation and setup guides
+- **Live Documentation Site**: Available at your GitHub Pages URL after deployment
+
+The documentation covers:
+
+- 🔐 Role-based access control (RBAC) system
+- 👥 User management and permissions matrix
+- 🏗️ System architecture and security features
+- 📱 Mobile and offline capabilities
+- 🌍 Multi-tenant and localization support
+
 ## 🤝 Contributing
 
 We welcome contributions to AgriNexus AI! Please follow these steps:

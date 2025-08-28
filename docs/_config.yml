@@ -1,0 +1,65 @@
+# GitHub Pages Jekyll Configuration
+title: AgriNexus AI Documentation
+description: >-
+  Comprehensive documentation for the AgriNexus AI Agricultural Management Platform,
+  covering user roles, permissions, and system features.
+
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: User Account Types
+    url: /user-account-types/
+  - title: Role Permissions
+    url: /user-account-types/#permission-matrix
+  - title: Security Features
+    url: /user-account-types/#security-features
+
+# Site metadata
+author:
+  name: AgriNexus AI Team
+  email: docs@agrinexus.ai
+
+# Social links
+github_username: agrinexus-ai
+
+# Google Analytics (uncomment and add your GA tracking ID)
+# google_analytics: UA-XXXXXXXX-X
+
+# SEO settings
+lang: en_US
+timezone: UTC
+
+# Custom CSS
+sass:
+  sass_dir: _sass
+  style: compressed
