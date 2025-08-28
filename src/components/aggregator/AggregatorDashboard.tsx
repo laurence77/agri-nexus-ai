@@ -123,7 +123,7 @@ const AggregatorDashboard: React.FC = () => {
       averageYield: sampleFarms.reduce((sum, farm) => sum + farm.estimatedYield, 0) / sampleFarms.length,
       contractsExpiring: 2
     })
-  }, [])
+  }, [sampleFarms])
 
   const filteredFarms = farms.filter(farm =>
     farm.farmerName.toLowerCase().includes(searchTerm.toLowerCase()) ||

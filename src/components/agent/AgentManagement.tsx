@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -148,47 +148,7 @@ export function AgentManagement() {
   const [filterRole, setFilterRole] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
-  useEffect(() => {
-    loadData();
-    generateMockData();
-  }, []);
-
-  const loadData = () => {
-    try {
-      const storedAgents = localStorage.getItem('agents');
-      if (storedAgents) {
-        const agentData = JSON.parse(storedAgents).map((agent: Agent) => ({
-          ...agent,
-          createdAt: new Date(agent.createdAt),
-          stats: {
-            ...agent.stats,
-            lastSyncDate: agent.stats.lastSyncDate ? new Date(agent.stats.lastSyncDate) : undefined,
-            lastActiveDate: agent.stats.lastActiveDate ? new Date(agent.stats.lastActiveDate) : undefined
-          },
-          deviceInfo: agent.deviceInfo ? {
-            ...agent.deviceInfo,
-            lastSeen: new Date(agent.deviceInfo.lastSeen)
-          } : undefined
-        }));
-        setAgents(agentData);
-      }
-
-      const storedAssignments = localStorage.getItem('agent_assignments');
-      if (storedAssignments) {
-        const assignmentData = JSON.parse(storedAssignments).map((assignment: Assignment) => ({
-          ...assignment,
-          dueDate: new Date(assignment.dueDate),
-          createdAt: new Date(assignment.createdAt),
-          completedAt: assignment.completedAt ? new Date(assignment.completedAt) : undefined
-        }));
-        setAssignments(assignmentData);
-      }
-    } catch (error) {
-      console.error('Error loading agent data:', error);
-    }
-  };
-
-  const generateMockData = () => {
+  const generateMockData = useCallback(() => {
     if (agents.length === 0) {
       const mockAgents: Agent[] = [
         {
@@ -314,7 +274,48 @@ export function AgentManagement() {
       setAgents(mockAgents);
       localStorage.setItem('agents', JSON.stringify(mockAgents));
     }
+  }, [agents.length]);
+
+  useEffect(() => {
+    loadData();
+    generateMockData();
+  }, [generateMockData]);
+
+  const loadData = () => {
+    try {
+      const storedAgents = localStorage.getItem('agents');
+      if (storedAgents) {
+        const agentData = JSON.parse(storedAgents).map((agent: Agent) => ({
+          ...agent,
+          createdAt: new Date(agent.createdAt),
+          stats: {
+            ...agent.stats,
+            lastSyncDate: agent.stats.lastSyncDate ? new Date(agent.stats.lastSyncDate) : undefined,
+            lastActiveDate: agent.stats.lastActiveDate ? new Date(agent.stats.lastActiveDate) : undefined
+          },
+          deviceInfo: agent.deviceInfo ? {
+            ...agent.deviceInfo,
+            lastSeen: new Date(agent.deviceInfo.lastSeen)
+          } : undefined
+        }));
+        setAgents(agentData);
+      }
+
+      const storedAssignments = localStorage.getItem('agent_assignments');
+      if (storedAssignments) {
+        const assignmentData = JSON.parse(storedAssignments).map((assignment: Assignment) => ({
+          ...assignment,
+          dueDate: new Date(assignment.dueDate),
+          createdAt: new Date(assignment.createdAt),
+          completedAt: assignment.completedAt ? new Date(assignment.completedAt) : undefined
+        }));
+        setAssignments(assignmentData);
+      }
+    } catch (error) {
+      console.error('Error loading agent data:', error);
+    }
   };
+
 
   const saveAgents = (agentList: Agent[]) => {
     try {
@@ -826,6 +827,8 @@ export function AgentManagement() {
                 </div>
                 
                 <select
+                  id="filterRole"
+                  aria-label="Filter by role"
                   className="px-3 py-2 border border-gray-300 rounded-md"
                   value={filterRole}
                   onChange={(e) => setFilterRole(e.target.value)}
@@ -839,6 +842,8 @@ export function AgentManagement() {
                 </select>
 
                 <select
+                  id="filterAgentStatus"
+                  aria-label="Filter by status"
                   className="px-3 py-2 border border-gray-300 rounded-md"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}

@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export interface Permission {
   id: string;
@@ -363,10 +363,7 @@ export const SYSTEM_ROLES = {
 };
 
 export class AccessControlService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
+  private static supabase = supabase;
 
   /**
    * Check if user has specific permission for a resource

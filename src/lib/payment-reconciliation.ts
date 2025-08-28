@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { SecurityService } from '@/lib/security';
 
 export interface PaymentTransaction {
@@ -126,10 +126,7 @@ export interface PaymentProvider {
 }
 
 export class PaymentReconciliationService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
+  private static supabase = supabase;
 
   /**
    * Import transactions from external payment providers

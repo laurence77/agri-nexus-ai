@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard, GlassButton } from '@/components/glass';
 import { 
@@ -84,32 +84,20 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    initializeMonitoring();
-    loadFields();
-  }, [tenantId]);
-
-  useEffect(() => {
-    if (selectedField) {
-      loadMonitoringData();
-    }
-  }, [selectedField]);
-
-  const initializeMonitoring = async () => {
+  const initializeMonitoring = useCallback(async () => {
     try {
       // Check if AI models are loaded
       const status = await monitoringService.getModelInfo();
       setModelStatus(status);
       
-      if (!monitoringService.isInitialized()) {
-        console.log('AI models are loading...');
-      }
+      // AI models initialization logic would go here
+      console.log('AI models initialized');
     } catch (error) {
       console.error('Error initializing monitoring:', error);
     }
-  };
+  }, [monitoringService]);
 
-  const loadFields = async () => {
+  const loadFields = useCallback(async () => {
     if (!tenantId) return;
     
     try {
@@ -125,7 +113,18 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
     } catch (error) {
       console.error('Error loading fields:', error);
     }
-  };
+  }, [tenantId, selectedField]);
+
+  useEffect(() => {
+    initializeMonitoring();
+    loadFields();
+  }, [initializeMonitoring, loadFields]);
+
+  useEffect(() => {
+    if (selectedField) {
+      loadMonitoringData();
+    }
+  }, [selectedField]);
 
   const loadMonitoringData = async () => {
     if (!selectedField) return;

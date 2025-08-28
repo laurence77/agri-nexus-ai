@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { SecurityService } from '@/lib/security';
 import { RewardsEngineService } from '@/lib/rewards-engine';
 import { 
@@ -18,10 +18,7 @@ import {
 } from '@/types/community-feed';
 
 export class CommunityService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
+  private static supabase = supabase;
 
   /**
    * Create a new community post

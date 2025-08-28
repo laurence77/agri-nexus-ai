@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { SecurityService } from '@/lib/security';
 import { 
   RewardAction, 
@@ -20,10 +20,7 @@ import {
 } from '@/types/rewards';
 
 export class RewardsEngineService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
+  private static supabase = supabase;
 
   // Default reward actions for the agricultural platform
   private static defaultRewardActions: RewardAction[] = [

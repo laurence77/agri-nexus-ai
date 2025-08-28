@@ -3,86 +3,49 @@
   "short_name": "AgriNexus AI",
   "description": "AI-powered agricultural management platform for African farmers with offline-first design for rural connectivity",
   "version": "1.0.0",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#1e3a8a",
   "theme_color": "#059669",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": ".",
   "lang": "en",
   "dir": "ltr",
   "categories": ["agriculture", "productivity", "business"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "src": "favicon.ico",
+      "sizes": "16x16 32x32 48x48 64x64",
+      "type": "image/x-icon"
     },
     {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "screenshots": [
     {
-      "src": "/screenshots/dashboard-mobile.png",
+      "src": "screenshots/dashboard-mobile.png",
       "sizes": "375x812",
       "type": "image/png",
       "platform": "narrow"
     },
     {
-      "src": "/screenshots/dashboard-desktop.png",
+      "src": "screenshots/dashboard-desktop.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "platform": "wide"
     },
     {
-      "src": "/screenshots/fields-mobile.png",
+      "src": "screenshots/fields-mobile.png",
       "sizes": "375x812",
       "type": "image/png",
       "platform": "narrow"
     },
     {
-      "src": "/screenshots/ai-monitoring.png",
+      "src": "screenshots/ai-monitoring.png",
       "sizes": "1920x1080",
       "type": "image/png",
       "platform": "wide"
@@ -93,10 +56,10 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View farm overview and key metrics",
-      "url": "/dashboard",
+      "url": "dashboard",
       "icons": [
         {
-          "src": "/icons/shortcut-dashboard.png",
+          "src": "icons/shortcut-dashboard.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -106,10 +69,10 @@
       "name": "Fields",
       "short_name": "Fields",
       "description": "Manage crop fields and monitoring",
-      "url": "/fields",
+      "url": "fields",
       "icons": [
         {
-          "src": "/icons/shortcut-fields.png",
+          "src": "icons/shortcut-fields.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -119,10 +82,10 @@
       "name": "AI Monitor",
       "short_name": "AI Monitor",
       "description": "AI-powered crop monitoring and analysis",
-      "url": "/ai-monitoring",
+      "url": "ai-monitoring",
       "icons": [
         {
-          "src": "/icons/shortcut-ai.png",
+          "src": "icons/shortcut-ai.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -132,10 +95,10 @@
       "name": "Capture Photo",
       "short_name": "Photo",
       "description": "Take crop photos for AI analysis",
-      "url": "/camera",
+      "url": "camera",
       "icons": [
         {
-          "src": "/icons/shortcut-camera.png",
+          "src": "icons/shortcut-camera.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -143,7 +106,7 @@
     }
   ],
   "share_target": {
-    "action": "/share",
+    "action": "share",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
@@ -161,12 +124,12 @@
   "protocol_handlers": [
     {
       "protocol": "web+agrinexus",
-      "url": "/handle?protocol=%s"
+      "url": "handle?protocol=%s"
     }
   ],
   "file_handlers": [
     {
-      "action": "/import",
+      "action": "import",
       "accept": {
         "application/json": [".json"],
         "text/csv": [".csv"],

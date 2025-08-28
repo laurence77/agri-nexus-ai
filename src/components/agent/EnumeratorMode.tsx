@@ -339,7 +339,7 @@ export function EnumeratorMode() {
     if (newFarmer.personalInfo?.firstName && newFarmer.personalInfo?.lastName && newFarmer.personalInfo?.phone) {
       const farmer: FarmerRegistration = {
         id: `farmer_${Date.now()}`,
-        personalInfo: newFarmer.personalInfo as any,
+        personalInfo: newFarmer.personalInfo!,
         farmInfo: {
           ...newFarmer.farmInfo!,
           location: {
@@ -347,7 +347,7 @@ export function EnumeratorMode() {
             coordinates: currentLocation || { lat: 0, lng: 0 }
           }
         },
-        economicInfo: newFarmer.economicInfo as any,
+        economicInfo: newFarmer.economicInfo!,
         dataCollection: {
           enumeratorId: enumeratorProfile?.id || '',
           visitDate: new Date(),
@@ -1131,7 +1131,7 @@ export function EnumeratorMode() {
                       value={newFarmer.personalInfo?.gender || 'male'}
                       onChange={(e) => setNewFarmer({
                         ...newFarmer,
-                        personalInfo: { ...newFarmer.personalInfo!, gender: e.target.value as any }
+                        personalInfo: { ...newFarmer.personalInfo!, gender: e.target.value as 'male' | 'female' | 'other' }
                       })}
                       aria-label="Select gender"
                       title="Select gender"
@@ -1253,7 +1253,7 @@ export function EnumeratorMode() {
                   value={newDataCollection.priority || 'medium'}
                   onChange={(e) => setNewDataCollection({
                     ...newDataCollection,
-                    priority: e.target.value as any
+                    priority: e.target.value as 'low' | 'medium' | 'high'
                   })}
                   aria-label="Select priority"
                   title="Select priority"

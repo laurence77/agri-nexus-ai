@@ -20,6 +20,7 @@ export default defineConfig(() => ({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,webp}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        dontCacheBustURLsMatching: /\.\w{8}\./,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./,

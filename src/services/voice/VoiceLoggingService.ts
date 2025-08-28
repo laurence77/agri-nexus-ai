@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 
 interface VoiceSession {
   id: string
@@ -46,11 +46,7 @@ interface VoiceAnalytics {
 }
 
 class VoiceLoggingService {
-  private supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    // WARNING: Do not expose service role key in client. Use anon key or server proxy in production.
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  )
+  private supabase = supabase
 
   async createVoiceSession(sessionData: Omit<VoiceSession, 'id'>): Promise<string> {
     const { data, error } = await this.supabase

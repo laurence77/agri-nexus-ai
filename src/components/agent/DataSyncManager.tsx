@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,8 +45,8 @@ interface SyncMetrics {
 interface DataConflict {
   id: string;
   table: string;
-  localData: any;
-  serverData: any;
+  localData: Record<string, unknown>;
+  serverData: Record<string, unknown>;
   timestamp: Date;
   resolved: boolean;
 }
@@ -78,19 +78,13 @@ export function DataSyncManager() {
   const [showConflicts, setShowConflicts] = useState(false);
   const [backupInProgress, setBackupInProgress] = useState(false);
 
-  useEffect(() => {
-    loadSyncMetrics();
-    const interval = setInterval(loadSyncMetrics, 10000); // Update every 10 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadSyncMetrics = async () => {
+  const loadSyncMetrics = useCallback(async () => {
     try {
       // Load pending data to calculate metrics
       const pendingData = await getPendingData();
       const totalRecords = pendingData.length;
-      const syncedRecords = pendingData.filter((item: any) => item.syncStatus === 'synced').length;
-      const failedRecords = pendingData.filter((item: any) => item.syncStatus === 'failed').length;
+      const syncedRecords = pendingData.filter((item: { syncStatus?: string }) => item.syncStatus === 'synced').length;
+      const failedRecords = pendingData.filter((item: { syncStatus?: string }) => item.syncStatus === 'failed').length;
 
       // Calculate data sizes (rough estimates)
       const localSize = Math.round(syncStatus.localDataSize / 1024 / 1024 * 100) / 100; // MB
@@ -116,13 +110,19 @@ export function DataSyncManager() {
           local: localSize,
           pending: pendingSize
         },
-        conflicts: conflictList.filter((c: any) => !c.resolved).length,
+        conflicts: conflictList.filter((c: { resolved?: boolean }) => !c.resolved).length,
         backups: backups.length
       });
     } catch (error) {
       console.error('Error loading sync metrics:', error);
     }
-  };
+  }, [getPendingData, syncStatus, isSyncing]);
+
+  useEffect(() => {
+    loadSyncMetrics();
+    const interval = setInterval(loadSyncMetrics, 10000); // Update every 10 seconds
+    return () => clearInterval(interval);
+  }, [loadSyncMetrics]);
 
   const handleForceSyncAll = async () => {
     if (!syncStatus.isOnline) {

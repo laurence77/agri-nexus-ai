@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export interface FieldProvenance {
   id: string;
@@ -22,10 +22,7 @@ export interface ProvenanceMetadata {
 }
 
 export class ProvenanceService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
+  private static supabase = supabase;
 
   /**
    * Record provenance for a single field change

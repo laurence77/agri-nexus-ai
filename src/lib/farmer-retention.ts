@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import { SecurityService } from '@/lib/security';
 
 export interface FarmerEngagementScore {
@@ -122,10 +122,7 @@ export interface ValueRealization {
 }
 
 export class FarmerRetentionService {
-  private static supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL!,
-    import.meta.env.VITE_SUPABASE_ANON_KEY!
-  );
+  private static supabase = supabase;
 
   /**
    * Calculate engagement score for a farmer

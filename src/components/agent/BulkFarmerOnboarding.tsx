@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -128,9 +128,19 @@ export function BulkFarmerOnboarding() {
     loadFarmers();
   }, []);
 
+  const calculateStats = useCallback(() => {
+    const total = farmers.length;
+    const completed = farmers.filter(f => f.status === 'completed').length;
+    const pending = farmers.filter(f => f.status === 'draft').length;
+    const verified = farmers.filter(f => f.status === 'verified').length;
+    const rejected = farmers.filter(f => f.status === 'rejected').length;
+
+    setStats({ total, completed, pending, verified, rejected });
+  }, [farmers]);
+
   useEffect(() => {
     calculateStats();
-  }, [farmers]);
+  }, [calculateStats]);
 
   const loadFarmers = () => {
     try {
@@ -160,15 +170,6 @@ export function BulkFarmerOnboarding() {
     }
   };
 
-  const calculateStats = () => {
-    const total = farmers.length;
-    const completed = farmers.filter(f => f.status === 'completed').length;
-    const pending = farmers.filter(f => f.status === 'draft').length;
-    const verified = farmers.filter(f => f.status === 'verified').length;
-    const rejected = farmers.filter(f => f.status === 'rejected').length;
-
-    setStats({ total, completed, pending, verified, rejected });
-  };
 
   const initializeNewFarmer = (): Partial<FarmerData> => ({
     id: `farmer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -1058,6 +1059,8 @@ export function BulkFarmerOnboarding() {
             </div>
             
             <select
+              id="filterStatus"
+              aria-label="Filter by status"
               className="px-3 py-2 border border-gray-300 rounded-md"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}

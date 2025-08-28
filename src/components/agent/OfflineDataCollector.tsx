@@ -61,15 +61,7 @@ export function OfflineDataCollector() {
 
   const { syncData, getPendingData, markAsSynced } = useOfflineSync();
 
-  useEffect(() => {
-    loadCollectedData();
-    initializeLocationTracking();
-    initializeBatteryTracking();
-    setupNetworkMonitoring();
-    calculateStorageUsage();
-  }, []);
-
-  const loadCollectedData = () => {
+  const loadCollectedData = useCallback(() => {
     try {
       const stored = localStorage.getItem('collected_data');
       if (stored) {
@@ -83,7 +75,15 @@ export function OfflineDataCollector() {
     } catch (error) {
       console.error('Error loading collected data:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadCollectedData();
+    initializeLocationTracking();
+    initializeBatteryTracking();
+    setupNetworkMonitoring();
+    calculateStorageUsage();
+  }, [loadCollectedData]);
 
   const saveCollectedData = (data: CollectedData[]) => {
     try {

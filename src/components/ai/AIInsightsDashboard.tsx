@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -50,11 +50,7 @@ export default function AIInsightsDashboard({
   const [aiLoading, setAiLoading] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    initializeAI();
-  }, [sensorReadings, fieldLocation]);
-
-  const initializeAI = async () => {
+  const initializeAI = useCallback(async () => {
     setAiLoading(true);
     try {
       // Initialize AI systems
@@ -88,7 +84,11 @@ export default function AIInsightsDashboard({
     } finally {
       setAiLoading(false);
     }
-  };
+  }, [sensorReadings, fieldLocation]);
+
+  useEffect(() => {
+    initializeAI();
+  }, [initializeAI]);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

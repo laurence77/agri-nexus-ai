@@ -85,102 +85,8 @@ export function QRScanner({
     }
   }, []);
 
-  const startScanning = useCallback(async () => {
-    try {
-      setErrorMessage('');
-      
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode,
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      };
-
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      setStream(mediaStream);
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.play();
-      }
-
-      // Check for flash capability
-      const videoTrack = mediaStream.getVideoTracks()[0];
-      const capabilities = videoTrack.getCapabilities();
-      setHasFlash('torch' in capabilities);
-
-      setIsScanning(true);
-      
-      // Start QR code detection
-      startQRDetection();
-
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      setErrorMessage('Unable to access camera. Please check permissions.');
-      if (onScanError) {
-        onScanError('Camera access denied');
-      }
-    }
-  }, [facingMode, onScanError]);
-
-  const stopScanning = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-    }
-    setIsScanning(false);
-    setFlashEnabled(false);
-  }, [stream]);
-
-  const startQRDetection = useCallback(() => {
-    const detectQRCode = () => {
-      if (!videoRef.current || !canvasRef.current || !isScanning) {
-        return;
-      }
-
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-
-      if (!context || video.readyState !== video.HAVE_ENOUGH_DATA) {
-        requestAnimationFrame(detectQRCode);
-        return;
-      }
-
-      // Set canvas size to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      // Draw video frame to canvas
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      try {
-        // Get image data for QR detection
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        
-        // Try to detect QR code using jsQR (would need to install this library)
-        // For now, we'll simulate QR detection with a simple pattern matching
-        const qrResult = simulateQRDetection(imageData);
-        
-        if (qrResult && qrResult !== lastScan) {
-          setLastScan(qrResult);
-          handleQRDetection(qrResult);
-        }
-      } catch (error) {
-        console.error('Error during QR detection:', error);
-      }
-
-      if (isScanning) {
-        requestAnimationFrame(detectQRCode);
-      }
-    };
-
-    requestAnimationFrame(detectQRCode);
-  }, [isScanning, lastScan]);
-
   // Simulate QR detection (in real implementation, use jsQR library)
-  const simulateQRDetection = (imageData: ImageData): string | null => {
+  const simulateQRDetection = useCallback((imageData: ImageData): string | null => {
     // This is a placeholder - in a real implementation you would use jsQR
     // or a similar library to detect QR codes from the image data
     
@@ -190,9 +96,9 @@ export function QRScanner({
       return mockQRData;
     }
     return null;
-  };
+  }, [scanMode]);
 
-  const generateMockQRData = (): string => {
+  const generateMockQRData = useCallback((): string => {
     const mockData = {
       type: scanMode,
       id: `${scanMode}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -207,7 +113,48 @@ export function QRScanner({
       }
     };
     return JSON.stringify(mockData);
-  };
+  }, [scanMode]);
+
+  const processQRData = useCallback(async (scanResult: QRScanResult) => {
+    try {
+      // Process based on scan mode
+      switch (scanMode) {
+        case 'farmer':
+          await processFarmerQR(scanResult);
+          break;
+        case 'farm':
+          await processFarmQR(scanResult);
+          break;
+        case 'livestock':
+          await processLivestockQR(scanResult);
+          break;
+        case 'crop':
+          await processCropQR(scanResult);
+          break;
+        default:
+          console.log('Generic QR processed:', scanResult);
+      }
+
+      // Update status
+      const updatedResults = scanResults.map(result => 
+        result.id === scanResult.id 
+          ? { ...result, status: 'processed' as const }
+          : result
+      );
+      saveScanResults(updatedResults);
+
+    } catch (error) {
+      console.error('Error processing QR data:', error);
+      
+      // Update status to error
+      const updatedResults = scanResults.map(result => 
+        result.id === scanResult.id 
+          ? { ...result, status: 'error' as const }
+          : result
+      );
+      saveScanResults(updatedResults);
+    }
+  }, [scanMode, scanResults, saveScanResults]);
 
   const handleQRDetection = useCallback(async (qrData: string) => {
     try {
@@ -262,7 +209,101 @@ export function QRScanner({
         onScanError('Error processing QR code');
       }
     }
-  }, [scanResults, saveScanResults, autoProcess, onScanSuccess, onScanError]);
+  }, [scanResults, saveScanResults, autoProcess, onScanSuccess, onScanError, processQRData]);
+
+  const startQRDetection = useCallback(() => {
+    const detectQRCode = () => {
+      if (!videoRef.current || !canvasRef.current || !isScanning) {
+        return;
+      }
+
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+
+      if (!context || video.readyState !== video.HAVE_ENOUGH_DATA) {
+        requestAnimationFrame(detectQRCode);
+        return;
+      }
+
+      // Set canvas size to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      try {
+        // Get image data for QR detection
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        
+        // Try to detect QR code using jsQR (would need to install this library)
+        // For now, we'll simulate QR detection with a simple pattern matching
+        const qrResult = simulateQRDetection(imageData);
+        
+        if (qrResult && qrResult !== lastScan) {
+          setLastScan(qrResult);
+          handleQRDetection(qrResult);
+        }
+      } catch (error) {
+        console.error('Error during QR detection:', error);
+      }
+
+      if (isScanning) {
+        requestAnimationFrame(detectQRCode);
+      }
+    };
+
+    requestAnimationFrame(detectQRCode);
+  }, [isScanning, lastScan, handleQRDetection, simulateQRDetection]);
+
+  const startScanning = useCallback(async () => {
+    try {
+      setErrorMessage('');
+      
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode,
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      setStream(mediaStream);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.play();
+      }
+
+      // Check for flash capability
+      const videoTrack = mediaStream.getVideoTracks()[0];
+      const capabilities = videoTrack.getCapabilities();
+      setHasFlash('torch' in capabilities);
+
+      setIsScanning(true);
+      
+      // Start QR code detection
+      startQRDetection();
+
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setErrorMessage('Unable to access camera. Please check permissions.');
+      if (onScanError) {
+        onScanError('Camera access denied');
+      }
+    }
+  }, [facingMode, onScanError, startQRDetection]);
+
+  const stopScanning = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setIsScanning(false);
+    setFlashEnabled(false);
+  }, [stream]);
 
   const getCurrentLocation = (): Promise<{latitude: number, longitude: number} | undefined> => {
     return new Promise((resolve) => {
@@ -286,46 +327,6 @@ export function QRScanner({
     });
   };
 
-  const processQRData = async (scanResult: QRScanResult) => {
-    try {
-      // Process based on scan mode
-      switch (scanMode) {
-        case 'farmer':
-          await processFarmerQR(scanResult);
-          break;
-        case 'farm':
-          await processFarmQR(scanResult);
-          break;
-        case 'livestock':
-          await processLivestockQR(scanResult);
-          break;
-        case 'crop':
-          await processCropQR(scanResult);
-          break;
-        default:
-          console.log('Generic QR processed:', scanResult);
-      }
-
-      // Update status
-      const updatedResults = scanResults.map(result => 
-        result.id === scanResult.id 
-          ? { ...result, status: 'processed' as const }
-          : result
-      );
-      saveScanResults(updatedResults);
-
-    } catch (error) {
-      console.error('Error processing QR data:', error);
-      
-      // Update status to error
-      const updatedResults = scanResults.map(result => 
-        result.id === scanResult.id 
-          ? { ...result, status: 'error' as const }
-          : result
-      );
-      saveScanResults(updatedResults);
-    }
-  };
 
   const processFarmerQR = async (scanResult: QRScanResult) => {
     // Process farmer QR code
