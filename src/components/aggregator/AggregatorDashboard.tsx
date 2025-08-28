@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -68,7 +68,7 @@ const AggregatorDashboard: React.FC = () => {
   const [selectedFarms, setSelectedFarms] = useState<string[]>([])
   const [searchTerm, setSearchTerm] = useState('')
 
-  const sampleFarms: SmallholderFarm[] = [
+  const sampleFarms: SmallholderFarm[] = useMemo(() => ([
     {
       id: 'farm-001',
       farmerName: 'John Mwangi',
@@ -111,7 +111,7 @@ const AggregatorDashboard: React.FC = () => {
       aiAssistantConnected: true,
       coordinates: [0.0472, 37.6507]
     }
-  ]
+  ]), [] )
 
   useEffect(() => {
     setFarms(sampleFarms)

@@ -235,22 +235,28 @@ export function TaskChecklistSystem() {
       // Load templates
       const storedTemplates = localStorage.getItem('checklist_templates');
       if (storedTemplates) {
-        const loadedTemplates = JSON.parse(storedTemplates).map((template: any) => ({
-          ...template,
-          createdAt: new Date(template.createdAt)
-        }));
+        const parsed: unknown = JSON.parse(storedTemplates);
+        const loadedTemplates: ChecklistTemplate[] = Array.isArray(parsed)
+          ? (parsed as ChecklistTemplate[]).map((template) => ({
+              ...template,
+              createdAt: new Date(template.createdAt)
+            }))
+          : [];
         setTemplates([...defaultTemplates, ...loadedTemplates]);
       }
 
       // Load instances
       const storedInstances = localStorage.getItem('checklist_instances');
       if (storedInstances) {
-        const loadedInstances = JSON.parse(storedInstances).map((instance: any) => ({
-          ...instance,
-          startedAt: instance.startedAt ? new Date(instance.startedAt) : undefined,
-          completedAt: instance.completedAt ? new Date(instance.completedAt) : undefined,
-          dueDate: instance.dueDate ? new Date(instance.dueDate) : undefined
-        }));
+        const parsed: unknown = JSON.parse(storedInstances);
+        const loadedInstances: ChecklistInstance[] = Array.isArray(parsed)
+          ? (parsed as ChecklistInstance[]).map((instance) => ({
+              ...instance,
+              startedAt: instance.startedAt ? new Date(instance.startedAt) : undefined,
+              completedAt: instance.completedAt ? new Date(instance.completedAt) : undefined,
+              dueDate: instance.dueDate ? new Date(instance.dueDate) : undefined
+            }))
+          : [];
         setInstances(loadedInstances);
       }
     } catch (error) {
