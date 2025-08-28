@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard, GlassButton } from '@/components/glass';
 import { 
@@ -90,12 +90,118 @@ export function IoTSensorIntegration({
   const [realTimeMode, setRealTimeMode] = useState(false);
   const [timeRange, setTimeRange] = useState<'hour' | 'day' | 'week' | 'month'>('day');
 
+  const loadSensors = useCallback(async () => {
+    // Mock sensor configurations - in production, fetch from database
+    const mockSensors: SensorConfig[] = [
+      {
+        id: 'sensor_001',
+        name: 'Soil Moisture A',
+        type: 'soil_moisture',
+        fieldId,
+        location: { x: 25, y: 30 },
+        batteryLevel: 85,
+        signalStrength: 90,
+        isOnline: true,
+        lastSeen: new Date(),
+        calibrationDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        thresholds: { min: 20, max: 80, critical_low: 15, critical_high: 90 }
+      },
+      {
+        id: 'sensor_002',
+        name: 'Temperature B',
+        type: 'temperature',
+        fieldId,
+        location: { x: 60, y: 45 },
+        batteryLevel: 65,
+        signalStrength: 75,
+        isOnline: true,
+        lastSeen: new Date(Date.now() - 5 * 60 * 1000),
+        calibrationDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+        thresholds: { min: 10, max: 35, critical_low: 5, critical_high: 40 }
+      },
+      {
+        id: 'sensor_003',
+        name: 'Humidity C',
+        type: 'humidity',
+        fieldId,
+        location: { x: 80, y: 20 },
+        batteryLevel: 45,
+        signalStrength: 60,
+        isOnline: false,
+        lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        calibrationDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+        thresholds: { min: 30, max: 80, critical_low: 20, critical_high: 90 }
+      },
+      {
+        id: 'sensor_004',
+        name: 'pH Monitor D',
+        type: 'ph',
+        fieldId,
+        location: { x: 40, y: 70 },
+        batteryLevel: 92,
+        signalStrength: 85,
+        isOnline: true,
+        lastSeen: new Date(),
+        calibrationDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+        thresholds: { min: 6.0, max: 7.5, critical_low: 5.5, critical_high: 8.0 }
+      }
+    ];
+    setSensors(mockSensors);
+  }, [fieldId]);
+
+  const loadSensorData = useCallback(async () => {
+    if (sensors.length === 0) return;
+    try {
+      const mockData: IoTSensorData[] = sensors
+        .filter(sensor => sensor.isOnline)
+        .map(sensor => {
+          let value: number;
+          let status: IoTSensorData['status'] = 'normal';
+          switch (sensor.type) {
+            case 'soil_moisture':
+              value = 40 + Math.random() * 40;
+              if (value < sensor.thresholds.critical_low || value > sensor.thresholds.critical_high) status = 'critical';
+              else if (value < sensor.thresholds.min || value > sensor.thresholds.max) status = 'warning';
+              break;
+            case 'temperature':
+              value = 20 + Math.random() * 15;
+              if (value < sensor.thresholds.critical_low || value > sensor.thresholds.critical_high) status = 'critical';
+              else if (value < sensor.thresholds.min || value > sensor.thresholds.max) status = 'warning';
+              break;
+            case 'humidity':
+              value = 50 + Math.random() * 30;
+              if (value < sensor.thresholds.critical_low || value > sensor.thresholds.critical_high) status = 'critical';
+              else if (value < sensor.thresholds.min || value > sensor.thresholds.max) status = 'warning';
+              break;
+            case 'ph':
+              value = 6.0 + Math.random() * 1.5;
+              if (value < sensor.thresholds.critical_low || value > sensor.thresholds.critical_high) status = 'critical';
+              else if (value < sensor.thresholds.min || value > sensor.thresholds.max) status = 'warning';
+              break;
+            default:
+              value = Math.random() * 100;
+          }
+          return {
+            sensorId: sensor.id,
+            timestamp: new Date(),
+            sensorType: sensor.type,
+            value,
+            unit: sensor.type === 'temperature' ? '°C' : sensor.type === 'soil_moisture' || sensor.type === 'humidity' ? '%' : '',
+            status
+          } as IoTSensorData;
+        });
+      setSensorData(mockData);
+    } catch (e) {
+      // no-op for mock
+    }
+  }, [sensors]);
+
   useEffect(() => {
     if (fieldId) {
       loadSensors();
       loadSensorData();
     }
-  }, [fieldId, timeRange]);
+  }, [fieldId, timeRange, loadSensors, loadSensorData]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -107,7 +213,7 @@ export function IoTSensorIntegration({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [realTimeMode, fieldId]);
+  }, [realTimeMode, fieldId, loadSensorData]);
 
   const loadSensors = async () => {
     // Mock sensor configurations - in production, fetch from database
