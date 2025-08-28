@@ -136,7 +136,7 @@ export function BulkFarmerOnboarding() {
     try {
       const stored = localStorage.getItem('onboarded_farmers');
       if (stored) {
-        const data = JSON.parse(stored).map((farmer: any) => ({
+        const data = JSON.parse(stored).map((farmer: Partial<FarmerData>) => ({
           ...farmer,
           metadata: {
             ...farmer.metadata,
@@ -267,7 +267,7 @@ export function BulkFarmerOnboarding() {
             setCurrentFarmer(prev => ({
               ...prev,
               contactInfo: {
-                ...prev?.contactInfo!,
+                ...(prev?.contactInfo || {}),
                 gpsCoordinates: {
                   latitude: position.coords.latitude,
                   longitude: position.coords.longitude,
@@ -275,7 +275,7 @@ export function BulkFarmerOnboarding() {
                 }
               },
               metadata: {
-                ...prev?.metadata!,
+                ...(prev?.metadata || {}),
                 location: {
                   latitude: position.coords.latitude,
                   longitude: position.coords.longitude
@@ -448,7 +448,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           personalInfo: {
-                            ...prev?.personalInfo!,
+                            ...(prev?.personalInfo || {}),
                             firstName: e.target.value
                           }
                         }))}
@@ -464,7 +464,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           personalInfo: {
-                            ...prev?.personalInfo!,
+                            ...(prev?.personalInfo || {}),
                             lastName: e.target.value
                           }
                         }))}
@@ -481,7 +481,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           personalInfo: {
-                            ...prev?.personalInfo!,
+                            ...(prev?.personalInfo || {}),
                             phone: e.target.value
                           }
                         }))}
@@ -498,7 +498,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           personalInfo: {
-                            ...prev?.personalInfo!,
+                            ...(prev?.personalInfo || {}),
                             email: e.target.value
                           }
                         }))}
@@ -515,7 +515,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           personalInfo: {
-                            ...prev?.personalInfo!,
+                            ...(prev?.personalInfo || {}),
                             gender: e.target.value as 'male' | 'female' | 'other'
                           }
                         }))}
@@ -536,7 +536,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           personalInfo: {
-                            ...prev?.personalInfo!,
+                            ...(prev?.personalInfo || {}),
                             householdSize: parseInt(e.target.value) || 1
                           }
                         }))}
@@ -569,7 +569,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           contactInfo: {
-                            ...prev?.contactInfo!,
+                            ...(prev?.contactInfo || {}),
                             address: e.target.value
                           }
                         }))}
@@ -585,7 +585,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           contactInfo: {
-                            ...prev?.contactInfo!,
+                            ...(prev?.contactInfo || {}),
                             village: e.target.value
                           }
                         }))}
@@ -601,7 +601,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           contactInfo: {
-                            ...prev?.contactInfo!,
+                            ...(prev?.contactInfo || {}),
                             ward: e.target.value
                           }
                         }))}
@@ -617,7 +617,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           contactInfo: {
-                            ...prev?.contactInfo!,
+                            ...(prev?.contactInfo || {}),
                             lga: e.target.value
                           }
                         }))}
@@ -633,7 +633,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           contactInfo: {
-                            ...prev?.contactInfo!,
+                            ...(prev?.contactInfo || {}),
                             state: e.target.value
                           }
                         }))}
@@ -670,7 +670,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           farmInfo: {
-                            ...prev?.farmInfo!,
+                            ...(prev?.farmInfo || {}),
                             farmName: e.target.value
                           }
                         }))}
@@ -687,8 +687,8 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           farmInfo: {
-                            ...prev?.farmInfo!,
-                            ownershipType: e.target.value as any
+                            ...(prev?.farmInfo || {}),
+                            ownershipType: e.target.value as 'owned' | 'rented' | 'shared' | 'communal'
                           }
                         }))}
                       >
@@ -710,7 +710,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           farmInfo: {
-                            ...prev?.farmInfo!,
+                            ...(prev?.farmInfo || {}),
                             totalLandSize: parseFloat(e.target.value) || 0
                           }
                         }))}
@@ -726,7 +726,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           farmInfo: {
-                            ...prev?.farmInfo!,
+                            ...(prev?.farmInfo || {}),
                             landSizeUnit: e.target.value as 'hectares' | 'acres'
                           }
                         }))}
@@ -744,7 +744,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           farmInfo: {
-                            ...prev?.farmInfo!,
+                            ...(prev?.farmInfo || {}),
                             soilType: e.target.value
                           }
                         }))}
@@ -760,7 +760,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           farmInfo: {
-                            ...prev?.farmInfo!,
+                            ...(prev?.farmInfo || {}),
                             mainCrops: e.target.value.split(',').map(crop => crop.trim()).filter(crop => crop)
                           }
                         }))}
@@ -795,7 +795,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           economicInfo: {
-                            ...prev?.economicInfo!,
+                            ...(prev?.economicInfo || {}),
                             primaryIncome: e.target.value
                           }
                         }))}
@@ -819,7 +819,7 @@ export function BulkFarmerOnboarding() {
                         onChange={(e) => setCurrentFarmer(prev => ({
                           ...prev,
                           economicInfo: {
-                            ...prev?.economicInfo!,
+                            ...(prev?.economicInfo || {}),
                             annualIncome: parseFloat(e.target.value) || undefined
                           }
                         }))}
@@ -839,9 +839,9 @@ export function BulkFarmerOnboarding() {
                           onChange={(e) => setCurrentFarmer(prev => ({
                             ...prev,
                             economicInfo: {
-                              ...prev?.economicInfo!,
+                              ...(prev?.economicInfo || {}),
                               bankAccount: {
-                                ...prev?.economicInfo?.bankAccount!,
+                                ...(prev?.economicInfo?.bankAccount || {}),
                                 bankName: e.target.value
                               }
                             }
@@ -858,9 +858,9 @@ export function BulkFarmerOnboarding() {
                           onChange={(e) => setCurrentFarmer(prev => ({
                             ...prev,
                             economicInfo: {
-                              ...prev?.economicInfo!,
+                              ...(prev?.economicInfo || {}),
                               bankAccount: {
-                                ...prev?.economicInfo?.bankAccount!,
+                                ...(prev?.economicInfo?.bankAccount || {}),
                                 accountNumber: e.target.value
                               }
                             }
@@ -877,9 +877,9 @@ export function BulkFarmerOnboarding() {
                           onChange={(e) => setCurrentFarmer(prev => ({
                             ...prev,
                             economicInfo: {
-                              ...prev?.economicInfo!,
+                              ...(prev?.economicInfo || {}),
                               bankAccount: {
-                                ...prev?.economicInfo?.bankAccount!,
+                                ...(prev?.economicInfo?.bankAccount || {}),
                                 accountName: e.target.value
                               }
                             }

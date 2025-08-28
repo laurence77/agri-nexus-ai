@@ -157,7 +157,7 @@ export function AgentManagement() {
     try {
       const storedAgents = localStorage.getItem('agents');
       if (storedAgents) {
-        const agentData = JSON.parse(storedAgents).map((agent: any) => ({
+        const agentData = JSON.parse(storedAgents).map((agent: Agent) => ({
           ...agent,
           createdAt: new Date(agent.createdAt),
           stats: {
@@ -175,7 +175,7 @@ export function AgentManagement() {
 
       const storedAssignments = localStorage.getItem('agent_assignments');
       if (storedAssignments) {
-        const assignmentData = JSON.parse(storedAssignments).map((assignment: any) => ({
+        const assignmentData = JSON.parse(storedAssignments).map((assignment: Assignment) => ({
           ...assignment,
           dueDate: new Date(assignment.dueDate),
           createdAt: new Date(assignment.createdAt),

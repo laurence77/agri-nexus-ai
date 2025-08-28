@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Shield, Lock, Mail, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +10,10 @@ import { useAuth } from '@/contexts/auth-context';
 
 export function LoginForm() {
   const { login } = useAuth();
+  const location = useLocation();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: 'laurence',
+    password: '1234',
     mfaCode: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +21,23 @@ export function LoginForm() {
   const [error, setError] = useState('');
   const [needsMFA, setNeedsMFA] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
+
+  // Support auto-login via query param ?demo=1
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('demo') === '1') {
+      (async () => {
+        try {
+          setIsLoading(true);
+          await login('laurence', '1234');
+        } catch (e) {
+          // ignore
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    }
+  }, [location.search, login]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,6 +196,16 @@ export function LoginForm() {
               ) : (
                 'Sign In'
               )}
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={isLoading}
+              onClick={() => login('laurence', '1234')}
+            >
+              Demo Login (laurence / 1234)
             </Button>
           </form>
         </CardContent>

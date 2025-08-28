@@ -15,6 +15,18 @@ AgriNexus AI is a comprehensive agricultural technology platform designed specif
 - 💬 **Community Features**: Cooperative management and farmer forums
 - 🎨 **Apple Glass UI**: Beautiful glassmorphism design system
 
+## 🚀 Live Demo
+
+- URL: https://laurence77.github.io/agri-nexus-ai/
+- Login: username `laurence`, password `1234`
+
+Quick Links
+- Login: https://laurence77.github.io/agri-nexus-ai/login
+- Dashboard: https://laurence77.github.io/agri-nexus-ai/dashboard
+- Marketplace: https://laurence77.github.io/agri-nexus-ai/marketplace
+- Analytics: https://laurence77.github.io/agri-nexus-ai/analytics
+- Admin: https://laurence77.github.io/agri-nexus-ai/admin
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -38,6 +50,7 @@ npm run dev
 ```
 
 The application will be available at `http://localhost:5173`
+Default demo login: username `laurence`, password `1234`
 
 ## 🛠 Technology Stack
 

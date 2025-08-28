@@ -209,7 +209,7 @@ export default function AccessGovernanceDashboard() {
             ].map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
-                onClick={() => setActiveTab(key as any)}
+                onClick={() => setActiveTab(key as 'overview' | 'requests' | 'drift' | 'analytics' | 'roles')}
                 className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
                   activeTab === key
                     ? 'border-blue-500 text-blue-600'

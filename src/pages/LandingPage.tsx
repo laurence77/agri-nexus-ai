@@ -131,7 +131,7 @@ const LandingPage = () => {
               onClick={() => navigate('/login')}
               className="glass-button bg-gradient-to-r from-emerald-500 to-green-600 text-white border-0"
             >
-              Get Started
+              Login
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
@@ -162,6 +162,17 @@ const LandingPage = () => {
                 </p>
               </div>
 
+              <p className="text-sm text-gray-600 mt-2">
+                Demo login: <span className="font-semibold">laurence</span> / <span className="font-semibold">1234</span>
+                {' '}·{' '}
+                <button
+                  className="text-emerald-600 underline hover:text-emerald-700"
+                  onClick={() => navigate('/login?demo=1')}
+                >
+                  one-click login
+                </button>
+              </p>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg"
@@ -169,6 +180,14 @@ const LandingPage = () => {
                   className="glass-button bg-gradient-to-r from-emerald-500 to-green-600 text-white border-0 px-8 py-4 text-lg"
                 >
                   Start Free Trial
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Button 
+                  size="lg"
+                  onClick={() => navigate('/login')}
+                  className="glass-button bg-gradient-to-r from-green-600 to-blue-600 text-white border-0 px-8 py-4 text-lg"
+                >
+                  Login
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <Button 
