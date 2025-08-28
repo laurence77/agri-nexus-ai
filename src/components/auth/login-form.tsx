@@ -93,19 +93,19 @@ export function LoginForm() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email Address
+                Username
               </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="email"
-                  type="email"
-                  placeholder="admin@agrinexus.ai"
+                  type="text"
+                  placeholder="laurence"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   className="pl-10"
                   required
-                  autoComplete="email"
+                  autoComplete="username"
                 />
               </div>
             </div>
@@ -119,7 +119,7 @@ export function LoginForm() {
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder="1234"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   className="pl-10 pr-10"
@@ -185,11 +185,8 @@ export function LoginForm() {
           <div className="w-full text-xs text-gray-500 space-y-2">
             <p>Demo Credentials:</p>
             <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded text-left">
-              <p><strong>Admin:</strong> admin@agrinexus.ai / Admin123!@#</p>
-              <p><strong>Manager:</strong> manager@agrinexus.ai / Manager123!</p>
-              <p className="mt-1 text-orange-600 dark:text-orange-400">
-                <strong>MFA Code for Admin:</strong> 123456
-              </p>
+              <p><strong>Username:</strong> laurence</p>
+              <p><strong>Password:</strong> 1234</p>
             </div>
           </div>
         </CardFooter>

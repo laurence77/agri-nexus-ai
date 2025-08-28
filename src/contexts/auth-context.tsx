@@ -277,58 +277,22 @@ async function simulateSecureLogin(email: string, password: string, mfaCode?: st
     throw new Error('Demo authentication disabled in production');
   }
 
-  // Use environment variables for demo credentials (never hardcode)
-  const validCredentials = [
-    {
-      email: import.meta.env.VITE_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
-      password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD,
-      user: {
-        id: '1',
-        email: import.meta.env.VITE_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
-        name: 'System Administrator',
-        role: 'admin' as UserRole,
-        permissions: [],
-        lastLogin: new Date(),
-        mfaEnabled: true,
-      }
-    },
-    {
-      email: import.meta.env.VITE_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
-      password: import.meta.env.VITE_DEMO_MANAGER_PASSWORD,
-      user: {
-        id: '2',
-        email: import.meta.env.VITE_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
-        name: 'Farm Manager',
-        role: 'manager' as UserRole,
-        permissions: [],
-        lastLogin: new Date(),
-        mfaEnabled: false,
-      }
-    }
-  ];
+  // Single demo credential for all users
+  const identifier = (email || '').trim().toLowerCase();
+  const isValid = identifier === 'laurence' && password === '1234';
+  if (!isValid) throw new Error('Invalid credentials');
 
-  const userRecord = validCredentials.find(
-    cred => cred.email.toLowerCase() === email.toLowerCase() && cred.password === password
-  );
-  
-  if (!userRecord) {
-    throw new Error('Invalid credentials');
-  }
-
-  // MFA validation
-  if (userRecord.user.mfaEnabled && !mfaCode) {
-    throw new Error('MFA code required');
-  }
-
-  if (userRecord.user.mfaEnabled && mfaCode !== import.meta.env.VITE_DEMO_MFA_CODE) {
-    throw new Error('Invalid MFA code');
-  }
-
-  return {
-    success: true,
-    user: userRecord.user,
-    token: generateSecureToken(),
+  const demoUser: User = {
+    id: 'demo-1',
+    email: 'laurence@demo.local',
+    name: 'Laurence (Demo Admin)',
+    role: 'admin',
+    permissions: [],
+    lastLogin: new Date(),
+    mfaEnabled: false,
   };
+
+  return { success: true, user: demoUser, token: generateSecureToken() };
 }
 
 async function simulateTokenRefresh(token: string) {
