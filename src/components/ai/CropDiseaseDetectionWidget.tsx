@@ -17,7 +17,7 @@ interface DetectionResponse {
   analysisTimestamp: string;
   fieldId: string;
   fieldName: string;
-  metadata: any;
+  metadata: Record<string, unknown>;
 }
 
 export const CropDiseaseDetectionWidget: React.FC = () => {
@@ -57,8 +57,8 @@ export const CropDiseaseDetectionWidget: React.FC = () => {
       const data: DetectionResponse = await res.json();
       if (!data.success) throw new Error('Detection failed');
       setResults(data.detections);
-    } catch (err: any) {
-      setError(err.message || 'Failed to detect diseases');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to detect diseases');
     } finally {
       setLoading(false);
     }

@@ -145,19 +145,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string, mfaCode?: string): Promise<boolean> => {
+  const login = async (emailOrUsername: string, password: string, mfaCode?: string): Promise<boolean> => {
     try {
       // Input validation
-      if (!email || !password) {
+      if (!emailOrUsername || !password) {
         throw new Error('Email and password are required');
       }
 
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      // Allow username-only login when demo mode is enabled
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrUsername);
+      if (!isEmail && import.meta.env.VITE_DEMO_MODE !== 'true') {
         throw new Error('Invalid email format');
       }
 
       // Simulated API call with security measures
-      const response = await simulateSecureLogin(email, password, mfaCode);
+      const response = await simulateSecureLogin(emailOrUsername, password, mfaCode);
       
       if (response.success && response.user) {
         const sessionExpiry = new Date(Date.now() + SESSION_TIMEOUT);
@@ -179,15 +181,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
         // Audit log
-        auditLog('user_login', { userId: response.user.id, email });
+        auditLog('user_login', { userId: response.user.id, identifier: emailOrUsername });
 
         return true;
       }
 
       return false;
     } catch (error) {
-      logger.error('Login attempt failed', { email, error: error instanceof Error ? error.message : 'Unknown error' }, 'AuthContext');
-      auditLog('login_failed', { email, error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('Login attempt failed', { identifier: emailOrUsername, error: error instanceof Error ? error.message : 'Unknown error' }, 'AuthContext');
+      auditLog('login_failed', { identifier: emailOrUsername, error: error instanceof Error ? error.message : 'Unknown error' });
       return false;
     }
   };

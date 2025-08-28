@@ -35,7 +35,7 @@ interface TaskItem {
   type: 'checkbox' | 'text' | 'number' | 'photo' | 'signature' | 'location' | 'date';
   required: boolean;
   completed: boolean;
-  value?: any;
+  value?: unknown;
   options?: string[]; // For dropdown/select items
   validation?: {
     min?: number;
@@ -277,7 +277,7 @@ export function TaskChecklistSystem() {
     }
   };
 
-  const createInstanceFromTemplate = (template: ChecklistTemplate, farmerInfo?: any) => {
+  const createInstanceFromTemplate = (template: ChecklistTemplate, farmerInfo?: ChecklistInstance['farmerInfo']) => {
     const instance: ChecklistInstance = {
       id: `instance_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       templateId: template.id,

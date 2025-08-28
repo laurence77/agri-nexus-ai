@@ -20,6 +20,22 @@ interface DashboardRouterProps {
  */
 export function DashboardRouter({ className }: DashboardRouterProps) {
   const { user, userRole, loading, tenantId } = useAuth();
+  
+  // Determine which dashboard to show based on user role  
+  const dashboardType = user && userRole ? getDashboardForRole(userRole) : null;
+
+  // Log dashboard access for analytics
+  React.useEffect(() => {
+    if (user && userRole && dashboardType) {
+      console.log('Dashboard Access:', {
+        userId: user.id,
+        userRole,
+        dashboardType,
+        tenantId,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [user, userRole, dashboardType, tenantId]);
 
   // Show loading state
   if (loading) {
@@ -95,8 +111,6 @@ export function DashboardRouter({ className }: DashboardRouterProps) {
     );
   }
 
-  // Determine which dashboard to show based on user role
-  const dashboardType = getDashboardForRole(userRole);
   
   if (!dashboardType) {
     return (
@@ -119,18 +133,6 @@ export function DashboardRouter({ className }: DashboardRouterProps) {
     );
   }
 
-  // Log dashboard access for analytics
-  React.useEffect(() => {
-    if (user && userRole && dashboardType) {
-      console.log('Dashboard Access:', {
-        userId: user.id,
-        userRole,
-        dashboardType,
-        tenantId,
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, [user, userRole, dashboardType, tenantId]);
 
   // Render the appropriate dashboard component
   const renderDashboard = () => {

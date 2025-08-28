@@ -99,7 +99,7 @@ export function QRScanner({
       return mockQRData;
     }
     return null;
-  }, [scanMode]);
+  }, [scanMode, generateMockQRData]);
 
   const generateMockQRData = useCallback((): string => {
     const mockData = {

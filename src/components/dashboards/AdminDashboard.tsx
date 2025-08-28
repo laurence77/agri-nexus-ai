@@ -467,9 +467,7 @@ export function AdminDashboard({ className }: AdminDashboardProps) {
       </div>
     </GlassCard>
   </>
-)
-  <>
-    {/* Existing overview content here... */}
+    
     {/* Orders Table for provenance display */}
     <GlassCard className="overflow-hidden mt-8">
       <h3 className="text-lg font-semibold text-white mb-4">Recent Orders</h3>

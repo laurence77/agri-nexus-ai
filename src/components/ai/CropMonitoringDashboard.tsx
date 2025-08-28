@@ -72,7 +72,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
     previewUrl: null,
     analyzing: false
   });
-  const [fields, setFields] = useState<any[]>([]);
+  const [fields, setFields] = useState<Array<Record<string, unknown>>>([]);
   const [modelStatus, setModelStatus] = useState<{
     diseaseModel: boolean;
     ndviModel: boolean;
@@ -120,11 +120,39 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
     loadFields();
   }, [initializeMonitoring, loadFields]);
 
+  const loadMonitoringData = React.useCallback(async () => {
+    if (!selectedField) return;
+
+    setData(prev => ({ ...prev, isLoading: true }));
+
+    try {
+      // Load all monitoring data in parallel
+      const [diseaseDetections, satelliteAnalysis, sensorData, predictions] = await Promise.all([
+        loadDiseaseDetections(),
+        loadSatelliteAnalysis(),
+        loadSensorData(),
+        loadPredictions()
+      ]);
+
+      setData({
+        diseaseDetections,
+        satelliteAnalysis,
+        sensorData,
+        predictions,
+        isLoading: false,
+        lastUpdated: new Date()
+      });
+    } catch (error) {
+      console.error('Error loading monitoring data:', error);
+      setData(prev => ({ ...prev, isLoading: false }));
+    }
+  }, [selectedField]);
+
   useEffect(() => {
     if (selectedField) {
       loadMonitoringData();
     }
-  }, [selectedField]);
+  }, [selectedField, loadMonitoringData]);
 
   const loadMonitoringData = async () => {
     if (!selectedField) return;
@@ -476,7 +504,7 @@ export function CropMonitoringDashboard({ className, fieldId }: CropMonitoringDa
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
-            onClick={() => setSelectedTab(key as any)}
+            onClick={() => setSelectedTab(key as 'overview' | 'diseases' | 'satellite' | 'sensors' | 'predictions')}
             className={cn(
               'flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
               selectedTab === key 

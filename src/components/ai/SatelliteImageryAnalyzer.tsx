@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassCard, GlassButton } from '@/components/glass';
 import { 
@@ -51,12 +51,57 @@ export function SatelliteImageryAnalyzer({
   const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'season' | 'year'>('month');
   const [autoRefresh, setAutoRefresh] = useState(false);
 
+  const loadAnalysis = useCallback(async () => {
+    if (!fieldId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/ai/crop-monitoring/analyze-satellite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fieldId, tenantId: 'current' })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to analyze satellite imagery');
+      }
+      setAnalysis(data.analysis);
+      onAnalysisComplete?.(data.analysis);
+    } catch (error) {
+      console.error('Satellite analysis error:', error);
+      setError(error instanceof Error ? error.message : 'Analysis failed');
+    } finally {
+      setLoading(false);
+    }
+  }, [fieldId, onAnalysisComplete]);
+
+  const loadNDVIHistory = useCallback(async () => {
+    try {
+      const mockHistory: NDVIHistoryPoint[] = [];
+      const now = new Date();
+      const days = selectedTimeRange === 'week' ? 7 : 
+                   selectedTimeRange === 'month' ? 30 :
+                   selectedTimeRange === 'season' ? 90 : 365;
+      for (let i = days; i >= 0; i -= Math.ceil(days / 10)) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const baseNDVI = 0.3 + (Math.sin((i / days) * Math.PI) * 0.4);
+        const ndvi = Math.max(0, Math.min(1, baseNDVI + (Math.random() - 0.5) * 0.1));
+        const health = ndvi > 0.7 ? 'excellent' : ndvi > 0.5 ? 'good' : ndvi > 0.3 ? 'fair' : ndvi > 0.1 ? 'poor' : 'critical';
+        mockHistory.push({ date, ndvi, health });
+      }
+      setNdviHistory(mockHistory.reverse());
+    } catch (error) {
+      console.error('Error loading NDVI history:', error);
+    }
+  }, [selectedTimeRange]);
+
   useEffect(() => {
     if (fieldId) {
       loadAnalysis();
       loadNDVIHistory();
     }
-  }, [fieldId, selectedTimeRange]);
+  }, [fieldId, selectedTimeRange, loadAnalysis, loadNDVIHistory]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -68,67 +113,7 @@ export function SatelliteImageryAnalyzer({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [autoRefresh, fieldId]);
-
-  const loadAnalysis = async () => {
-    if (!fieldId) return;
-    
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/ai/crop-monitoring/analyze-satellite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fieldId, tenantId: 'current' }) // In real app, get from auth
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to analyze satellite imagery');
-      }
-
-      setAnalysis(data.analysis);
-      onAnalysisComplete?.(data.analysis);
-    } catch (error) {
-      console.error('Satellite analysis error:', error);
-      setError(error instanceof Error ? error.message : 'Analysis failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadNDVIHistory = async () => {
-    // Mock NDVI history data - in production, fetch from database
-    try {
-      const mockHistory: NDVIHistoryPoint[] = [];
-      const now = new Date();
-      const days = selectedTimeRange === 'week' ? 7 : 
-                   selectedTimeRange === 'month' ? 30 :
-                   selectedTimeRange === 'season' ? 90 : 365;
-
-      for (let i = days; i >= 0; i -= Math.ceil(days / 10)) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-        
-        // Generate realistic NDVI progression
-        const baseNDVI = 0.3 + (Math.sin((i / days) * Math.PI) * 0.4);
-        const ndvi = Math.max(0, Math.min(1, baseNDVI + (Math.random() - 0.5) * 0.1));
-        
-        const health = ndvi > 0.7 ? 'excellent' :
-                      ndvi > 0.5 ? 'good' :
-                      ndvi > 0.3 ? 'fair' :
-                      ndvi > 0.1 ? 'poor' : 'critical';
-
-        mockHistory.push({ date, ndvi, health });
-      }
-
-      setNdviHistory(mockHistory.reverse());
-    } catch (error) {
-      console.error('Error loading NDVI history:', error);
-    }
-  };
+  }, [autoRefresh, fieldId, loadAnalysis]);
 
   const getHealthColor = (health: string) => {
     switch (health) {

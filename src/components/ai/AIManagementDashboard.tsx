@@ -531,7 +531,7 @@ const AIManagementDashboard: React.FC = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Response time target:</span>
-                        <span>< 2 seconds</span>
+                        <span>&lt; 2 seconds</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Confidence threshold:</span>

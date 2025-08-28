@@ -210,7 +210,7 @@ What would you like help with today?`,
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const sendMessage = async (content: string, category?: string) => {
+  const sendMessage = async (content: string, category?: ChatMessage['category']) => {
     if (!content.trim()) return;
 
     const userMessage: ChatMessage = {
@@ -218,7 +218,7 @@ What would you like help with today?`,
       type: 'user',
       content,
       timestamp: new Date(),
-      category: category as any
+      category
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -233,7 +233,7 @@ What would you like help with today?`,
     }, 1500 + Math.random() * 1000);
   };
 
-  const generateAIResponse = (userInput: string, category?: string): ChatMessage => {
+  const generateAIResponse = (userInput: string, category?: ChatMessage['category']): ChatMessage => {
     const input = userInput.toLowerCase();
     let response = '';
     let responseCategory: ChatMessage['category'] = 'general';

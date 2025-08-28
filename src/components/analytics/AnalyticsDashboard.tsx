@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/multi-tenant-auth';
 import { 
   forecastEngine, 
@@ -25,15 +25,95 @@ export function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'weather' | 'disease' | 'yield' | 'market'>('overview');
 
+  const loadInitialData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data: farmsData, error: farmsError } = await supabase
+        .from('farms')
+        .select('*')
+        .eq('tenant_id', tenant?.id)
+        .eq('status', 'active')
+        .order('name');
+      if (farmsError) throw farmsError;
+      setFarms(farmsData || []);
+      if (farmsData && farmsData.length > 0) {
+        setSelectedFarm(farmsData[0].id);
+      }
+      const generalInsights = await forecastEngine.generateInsights(tenant!.id);
+      setInsights(generalInsights);
+    } catch (err) {
+      console.error('Error loading analytics data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant]);
+
   useEffect(() => {
     loadInitialData();
-  }, [tenant]);
+  }, [tenant, loadInitialData]);
+
+  const loadFarmAnalytics = useCallback(async (farmId: string) => {
+    try {
+      const farm = farms.find(f => f.id === farmId);
+      if (!farm) return;
+      if (farm.latitude && farm.longitude) {
+        const weather = await forecastEngine.generateWeatherForecast(
+          farm.latitude,
+          farm.longitude,
+          14
+        );
+        setWeatherForecast(weather);
+        const cropTypes = farm.primary_crops || ['maize'];
+        const allDiseaseRisks: DiseaseRiskForecast[] = [];
+        for (const crop of cropTypes) {
+          const risks = await forecastEngine.predictDiseaseRisk(
+            crop,
+            { latitude: farm.latitude, longitude: farm.longitude },
+            farmId
+          );
+          allDiseaseRisks.push(...risks.map(r => ({ ...r, crop_type: crop })));
+        }
+        setDiseaseRisks(allDiseaseRisks);
+      }
+      const { data: activeFields, error: fieldsError } = await supabase
+        .from('fields')
+        .select(`
+          *,
+          activities!inner(*)
+        `)
+        .eq('farm_id', farmId)
+        .eq('status', 'active')
+        .eq('activities.activity_type', 'planting')
+        .gte('activities.date', new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString());
+      if (!fieldsError && activeFields && activeFields.length > 0) {
+        const yieldPromises = activeFields.map(field => {
+          const plantingActivity = field.activities[0];
+          return forecastEngine.forecastYield(
+            farmId,
+            field.id,
+            plantingActivity.crop_type,
+            plantingActivity.date
+          );
+        });
+        const yields = await Promise.all(yieldPromises);
+        setYieldForecasts(yields);
+      }
+      const marketLocation = (farm as any).location || 'Nairobi';
+      const marketPromises = (farm.primary_crops || ['maize']).map((crop: string) =>
+        forecastEngine.forecastMarketPrices(crop, marketLocation)
+      );
+      const markets = await Promise.all(marketPromises);
+      setMarketPrices(markets);
+    } catch (error) {
+      console.error('Error loading farm analytics:', error);
+    }
+  }, [farms]);
 
   useEffect(() => {
     if (selectedFarm) {
       loadFarmAnalytics(selectedFarm);
     }
-  }, [selectedFarm]);
+  }, [selectedFarm, loadFarmAnalytics]);
 
   const loadInitialData = async () => {
     try {

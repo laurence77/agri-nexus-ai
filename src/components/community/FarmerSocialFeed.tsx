@@ -315,11 +315,13 @@ export function FarmerSocialFeed() {
       }
       return post;
     }));
-    navigator.share && navigator.share({
-      title: 'AgriNexus Post',
-      text: 'Check out this farming tip!',
-      url: `${window.location.origin}/post/${postId}`
-    });
+    if (navigator.share) {
+      navigator.share({
+        title: 'AgriNexus Post',
+        text: 'Check out this farming tip!',
+        url: `${window.location.origin}/post/${postId}`
+      });
+    }
   };
 
   const handleJoinCommunity = (communityId: string) => {
