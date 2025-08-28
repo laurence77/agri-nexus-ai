@@ -282,7 +282,7 @@ export function BulkFarmerOnboarding() {
                   longitude: position.coords.longitude
                 }
               }
-            }));
+            } as Partial<FarmerData>));
           }
         },
         (error) => {
@@ -313,7 +313,7 @@ export function BulkFarmerOnboarding() {
               ...prev?.photos,
               [type]: imageData
             }
-          }));
+          } as Partial<FarmerData>));
         };
         reader.readAsDataURL(file);
       }
@@ -452,7 +452,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.personalInfo || {}),
                             firstName: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter first name"
                       />
                     </div>
@@ -468,7 +468,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.personalInfo || {}),
                             lastName: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter last name"
                       />
                     </div>
@@ -485,7 +485,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.personalInfo || {}),
                             phone: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter phone number"
                       />
                     </div>
@@ -502,7 +502,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.personalInfo || {}),
                             email: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter email address"
                       />
                     </div>
@@ -511,6 +511,7 @@ export function BulkFarmerOnboarding() {
                       <Label htmlFor="gender">Gender</Label>
                       <select
                         id="gender"
+                        aria-label="Gender"
                         className="w-full p-2 border border-gray-300 rounded-md"
                         value={currentFarmer.personalInfo?.gender || 'male'}
                         onChange={(e) => setCurrentFarmer(prev => ({
@@ -519,7 +520,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.personalInfo || {}),
                             gender: e.target.value as 'male' | 'female' | 'other'
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                       >
                         <option value="male">Male</option>
                         <option value="female">Female</option>
@@ -540,7 +541,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.personalInfo || {}),
                             householdSize: parseInt(e.target.value) || 1
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                       />
                     </div>
                   </div>
@@ -573,7 +574,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.contactInfo || {}),
                             address: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter full address"
                       />
                     </div>
@@ -589,7 +590,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.contactInfo || {}),
                             village: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter village name"
                       />
                     </div>
@@ -605,7 +606,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.contactInfo || {}),
                             ward: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter ward"
                       />
                     </div>
@@ -621,7 +622,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.contactInfo || {}),
                             lga: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter LGA"
                       />
                     </div>
@@ -637,7 +638,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.contactInfo || {}),
                             state: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter state"
                       />
                     </div>
@@ -674,7 +675,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.farmInfo || {}),
                             farmName: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter farm name"
                       />
                     </div>
@@ -683,6 +684,7 @@ export function BulkFarmerOnboarding() {
                       <Label htmlFor="ownershipType">Land Ownership</Label>
                       <select
                         id="ownershipType"
+                        aria-label="Land ownership type"
                         className="w-full p-2 border border-gray-300 rounded-md"
                         value={currentFarmer.farmInfo?.ownershipType || 'owned'}
                         onChange={(e) => setCurrentFarmer(prev => ({
@@ -691,7 +693,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.farmInfo || {}),
                             ownershipType: e.target.value as 'owned' | 'rented' | 'shared' | 'communal'
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                       >
                         <option value="owned">Owned</option>
                         <option value="rented">Rented</option>
@@ -714,7 +716,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.farmInfo || {}),
                             totalLandSize: parseFloat(e.target.value) || 0
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                       />
                     </div>
 
@@ -722,6 +724,7 @@ export function BulkFarmerOnboarding() {
                       <Label htmlFor="landSizeUnit">Unit</Label>
                       <select
                         id="landSizeUnit"
+                        aria-label="Land size unit"
                         className="w-full p-2 border border-gray-300 rounded-md"
                         value={currentFarmer.farmInfo?.landSizeUnit || 'hectares'}
                         onChange={(e) => setCurrentFarmer(prev => ({
@@ -730,7 +733,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.farmInfo || {}),
                             landSizeUnit: e.target.value as 'hectares' | 'acres'
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                       >
                         <option value="hectares">Hectares</option>
                         <option value="acres">Acres</option>
@@ -748,7 +751,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.farmInfo || {}),
                             soilType: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="e.g., Sandy loam, Clay, etc."
                       />
                     </div>
@@ -764,7 +767,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.farmInfo || {}),
                             mainCrops: e.target.value.split(',').map(crop => crop.trim()).filter(crop => crop)
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="e.g., Maize, Rice, Cassava"
                       />
                     </div>
@@ -791,6 +794,7 @@ export function BulkFarmerOnboarding() {
                       <Label htmlFor="primaryIncome">Primary Income Source</Label>
                       <select
                         id="primaryIncome"
+                        aria-label="Primary income source"
                         className="w-full p-2 border border-gray-300 rounded-md"
                         value={currentFarmer.economicInfo?.primaryIncome || 'farming'}
                         onChange={(e) => setCurrentFarmer(prev => ({
@@ -799,7 +803,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.economicInfo || {}),
                             primaryIncome: e.target.value
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                       >
                         <option value="farming">Farming</option>
                         <option value="livestock">Livestock</option>
@@ -823,7 +827,7 @@ export function BulkFarmerOnboarding() {
                             ...(prev?.economicInfo || {}),
                             annualIncome: parseFloat(e.target.value) || undefined
                           }
-                        }))}
+                        } as Partial<FarmerData>))}
                         placeholder="Enter annual income"
                       />
                     </div>
@@ -846,7 +850,7 @@ export function BulkFarmerOnboarding() {
                                 bankName: e.target.value
                               }
                             }
-                          }))}
+                          } as Partial<FarmerData>))}
                           placeholder="Enter bank name"
                         />
                       </div>
@@ -865,7 +869,7 @@ export function BulkFarmerOnboarding() {
                                 accountNumber: e.target.value
                               }
                             }
-                          }))}
+                          } as Partial<FarmerData>))}
                           placeholder="Enter account number"
                         />
                       </div>
@@ -884,7 +888,7 @@ export function BulkFarmerOnboarding() {
                                 accountName: e.target.value
                               }
                             }
-                          }))}
+                          } as Partial<FarmerData>))}
                           placeholder="Enter account name"
                         />
                       </div>
@@ -918,7 +922,7 @@ export function BulkFarmerOnboarding() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setCurrentFarmer(prev => ({ ...prev, status: 'draft' }));
+                  setCurrentFarmer(prev => ({ ...prev, status: 'draft' } as Partial<FarmerData>));
                   saveFarmer();
                 }}
               >
@@ -933,7 +937,7 @@ export function BulkFarmerOnboarding() {
               ) : (
                 <Button 
                   onClick={() => {
-                    setCurrentFarmer(prev => ({ ...prev, status: 'completed' }));
+                    setCurrentFarmer(prev => ({ ...prev, status: 'completed' } as Partial<FarmerData>));
                     saveFarmer();
                   }}
                   className="bg-green-600 hover:bg-green-700"

@@ -1233,7 +1233,7 @@ export function EnumeratorMode() {
                   value={newDataCollection.collectionType || 'general_visit'}
                   onChange={(e) => setNewDataCollection({
                     ...newDataCollection,
-                    collectionType: e.target.value as any
+                    collectionType: e.target.value as DataCollection['collectionType']
                   })}
                   aria-label="Select collection type"
                   title="Select collection type"
@@ -1253,7 +1253,7 @@ export function EnumeratorMode() {
                   value={newDataCollection.priority || 'medium'}
                   onChange={(e) => setNewDataCollection({
                     ...newDataCollection,
-                    priority: e.target.value as 'low' | 'medium' | 'high'
+                    priority: e.target.value as DataCollection['priority']
                   })}
                   aria-label="Select priority"
                   title="Select priority"

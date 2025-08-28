@@ -65,10 +65,13 @@ export function QRScanner({
     try {
       const stored = localStorage.getItem('qr_scan_results');
       if (stored) {
-        const results = JSON.parse(stored).map((result: any) => ({
-          ...result,
-          timestamp: new Date(result.timestamp)
-        }));
+        const parsed: unknown = JSON.parse(stored);
+        const results: QRScanResult[] = Array.isArray(parsed)
+          ? parsed.map((result) => ({
+              ...result,
+              timestamp: new Date((result as { timestamp: string }).timestamp)
+            }))
+          : [];
         setScanResults(results);
       }
     } catch (error) {

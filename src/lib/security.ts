@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import CryptoJS from 'crypto-js';
 
 // Enhanced security service with field-level encryption and audit trails

@@ -24,7 +24,7 @@ import { useOfflineSync } from '@/lib/offline-sync';
 interface CollectedData {
   id: string;
   type: 'farmer' | 'farm' | 'livestock' | 'crop' | 'survey';
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   location?: {
     latitude: number;
     longitude: number;
@@ -65,10 +65,13 @@ export function OfflineDataCollector() {
     try {
       const stored = localStorage.getItem('collected_data');
       if (stored) {
-        const data = JSON.parse(stored).map((item: any) => ({
-          ...item,
-          timestamp: new Date(item.timestamp)
-        }));
+        const parsed: unknown = JSON.parse(stored);
+        const data: CollectedData[] = Array.isArray(parsed)
+          ? parsed.map((item) => ({
+              ...(item as CollectedData),
+              timestamp: new Date((item as { timestamp: string }).timestamp)
+            }))
+          : [];
         setCollectedData(data);
         updateSyncStatus(data);
       }
