@@ -41,8 +41,8 @@ const demoUsers = {
 
 // After (SECURE):
 const isValidDemoUser = (
-  email === process.env.REACT_APP_DEMO_ADMIN_EMAIL && 
-  password === process.env.REACT_APP_DEMO_ADMIN_PASSWORD
+  email === import.meta.env.VITE_DEMO_ADMIN_EMAIL && 
+  password === import.meta.env.VITE_DEMO_ADMIN_PASSWORD
 );
 ```
 
@@ -74,13 +74,15 @@ const sanitizeCSSValue = (value: string): string => {
 All sensitive configuration must be stored in environment variables:
 
 ```env
-# Authentication (Required in production)
-REACT_APP_DEMO_ADMIN_EMAIL=admin@example.com
-REACT_APP_DEMO_ADMIN_PASSWORD=secure-admin-password
-REACT_APP_DEMO_MFA_CODE=123456
+# Vite client-side env vars (exposed at build time)
+VITE_DEMO_ADMIN_EMAIL=admin@example.com
+VITE_DEMO_ADMIN_PASSWORD=secure-admin-password
+VITE_DEMO_MFA_CODE=123456
+VITE_WEATHER_API_KEY=your-weather-api-key
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# API Keys (Never commit to version control)
-REACT_APP_WEATHER_API_KEY=your-weather-api-key
+# Server-side secrets (DO NOT expose to client)
 PAYSTACK_SECRET_KEY=your-paystack-secret-key
 JWT_SECRET=your-jwt-secret-key
 ```

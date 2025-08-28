@@ -3,7 +3,7 @@ import CryptoJS from 'crypto-js';
 
 // Enhanced security service with field-level encryption and audit trails
 export class SecurityService {
-  private static encryptionKey = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'default-key-change-in-prod';
+  private static encryptionKey = import.meta.env.VITE_ENCRYPTION_KEY || 'default-key-change-in-prod';
   
   /**
    * Encrypt sensitive field data before storing in database

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProvenanceViewer } from '@/components/ui/provenance-viewer';
 import axios from 'axios';
 
-const API_KEY = process.env.NEXT_PUBLIC_PARTNER_API_KEY || '';
+const API_KEY = import.meta.env.VITE_PARTNER_API_KEY || '';
 
 const fetcher = (url: string) => axios.get(url, { headers: { 'x-api-key': API_KEY } }).then(r => r.data);
 

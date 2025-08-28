@@ -157,7 +157,7 @@ export function PaymentForm({
 
       if (transaction.status) {
         PaystackService.initializePaystackPopup({
-          key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+          key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '',
           email: customerEmail,
           amount: PaystackService.toKobo(amount),
           currency,

@@ -74,8 +74,8 @@ export class EnhancedQRService {
 
   constructor() {
     this.baseQRService = new QRCodeService(
-      process.env.QR_SECRET_KEY || 'default-secret-key',
-      process.env.BASE_URL || 'https://agrinexus.app'
+      (import.meta.env.VITE_QR_SECRET_KEY as string) || 'default-secret-key',
+      (import.meta.env.VITE_BASE_URL as string) || 'https://agrinexus.app'
     );
   }
 

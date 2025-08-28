@@ -47,8 +47,9 @@ interface VoiceAnalytics {
 
 class VoiceLoggingService {
   private supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    import.meta.env.VITE_SUPABASE_URL!,
+    // WARNING: Do not expose service role key in client. Use anon key or server proxy in production.
+    import.meta.env.VITE_SUPABASE_ANON_KEY!
   )
 
   async createVoiceSession(sessionData: Omit<VoiceSession, 'id'>): Promise<string> {

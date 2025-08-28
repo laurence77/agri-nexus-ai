@@ -185,7 +185,7 @@ export function CheckoutFlow({
       if (transaction.status) {
         // Open Paystack payment popup
         PaystackService.initializePaystackPopup({
-          key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+          key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '',
           email: billingInfo.email,
           amount: PaystackService.toKobo(totalAmount),
           currency: selectedPlan.currency,

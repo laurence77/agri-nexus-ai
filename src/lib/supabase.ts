@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
-// Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'your-supabase-url';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-supabase-anon-key';
+// Supabase configuration (Vite exposes VITE_* at build time)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'your-supabase-url';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-supabase-anon-key';
 
 // Create Supabase client with TypeScript support
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {

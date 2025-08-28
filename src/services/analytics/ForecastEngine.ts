@@ -95,7 +95,7 @@ export interface AnalyticsInsight {
 }
 
 class ForecastEngine {
-  private readonly WEATHER_API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
+  private readonly WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY as string | undefined;
   private readonly MARKET_DATA_SOURCES = [
     'national_agricultural_marketing_board',
     'commodity_exchanges',

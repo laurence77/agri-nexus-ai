@@ -1,21 +1,14 @@
-# GitHub Pages Jekyll Configuration
+# GitHub Pages Configuration
 title: AgriNexus AI Documentation
 description: >-
   Comprehensive documentation for the AgriNexus AI Agricultural Management Platform,
   covering user roles, permissions, and system features.
 
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site
-
-# Build settings
-markdown: kramdown
-highlighter: rouge
-theme: minima
-
+# GitHub Pages will use Jekyll by default
+# Use the minimal theme for simplicity
+remote_theme: pages-themes/minimal@v0.2.0
 plugins:
-  - jekyll-feed
-  - jekyll-sitemap
-  - jekyll-seo-tag
+  - jekyll-remote-theme
 
 # Exclude from processing
 exclude:

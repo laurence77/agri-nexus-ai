@@ -4,6 +4,8 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
+  // Set base for GitHub Pages project sites. Can be overridden in CI with BASE_PATH
+  base: process.env.BASE_PATH ?? '/',
   server: {
     host: "127.0.0.1",
     port: 5173,

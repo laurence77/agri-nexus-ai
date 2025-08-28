@@ -273,18 +273,18 @@ async function simulateSecureLogin(email: string, password: string, mfaCode?: st
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   // SECURITY: Only allow demo authentication in development
-  if (process.env.NODE_ENV === 'production' && process.env.DEMO_MODE !== 'true') {
+  if (import.meta.env.PROD && import.meta.env.VITE_DEMO_MODE !== 'true') {
     throw new Error('Demo authentication disabled in production');
   }
 
   // Use environment variables for demo credentials (never hardcode)
   const validCredentials = [
     {
-      email: process.env.REACT_APP_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
-      password: process.env.REACT_APP_DEMO_ADMIN_PASSWORD,
+      email: import.meta.env.VITE_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
+      password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD,
       user: {
         id: '1',
-        email: process.env.REACT_APP_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
+        email: import.meta.env.VITE_DEMO_ADMIN_EMAIL || 'admin@agrinexus.ai',
         name: 'System Administrator',
         role: 'admin' as UserRole,
         permissions: [],
@@ -293,11 +293,11 @@ async function simulateSecureLogin(email: string, password: string, mfaCode?: st
       }
     },
     {
-      email: process.env.REACT_APP_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
-      password: process.env.REACT_APP_DEMO_MANAGER_PASSWORD,
+      email: import.meta.env.VITE_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
+      password: import.meta.env.VITE_DEMO_MANAGER_PASSWORD,
       user: {
         id: '2',
-        email: process.env.REACT_APP_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
+        email: import.meta.env.VITE_DEMO_MANAGER_EMAIL || 'manager@agrinexus.ai',
         name: 'Farm Manager',
         role: 'manager' as UserRole,
         permissions: [],
@@ -320,7 +320,7 @@ async function simulateSecureLogin(email: string, password: string, mfaCode?: st
     throw new Error('MFA code required');
   }
 
-  if (userRecord.user.mfaEnabled && mfaCode !== process.env.REACT_APP_DEMO_MFA_CODE) {
+  if (userRecord.user.mfaEnabled && mfaCode !== import.meta.env.VITE_DEMO_MFA_CODE) {
     throw new Error('Invalid MFA code');
   }
 

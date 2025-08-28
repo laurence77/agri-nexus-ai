@@ -6,7 +6,6 @@
 
 import QRCode from 'qrcode';
 import jsQR from 'jsqr';
-import crypto from 'crypto';
 
 export interface QRCodeData {
   type: 'traceability' | 'marketplace' | 'batch' | 'product' | 'certificate';
@@ -88,6 +87,25 @@ export class QRCodeService {
     };
   }
 
+  private async hmacSHA256Hex(key: string, data: string): Promise<string> {
+    try {
+      const enc = new TextEncoder();
+      const cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        enc.encode(key),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const signature = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(data));
+      const bytes = new Uint8Array(signature);
+      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+      console.error('HMAC generation failed:', e);
+      return '';
+    }
+  }
+
   /**
    * Generate QR code for crop batch traceability
    */
@@ -125,7 +143,7 @@ export class QRCodeService {
         certifications: cropData.certifications,
         verificationUrl: `${this.baseUrl}/verify/${batchId}`,
         generatedAt: new Date().toISOString(),
-        signature: this.generateSignature(batchId, farmerId, cropData.cropType)
+        signature: await this.generateSignature(batchId, farmerId, cropData.cropType)
       };
 
       // Generate QR code image
@@ -187,7 +205,7 @@ export class QRCodeService {
         certifications: listingData.certifications,
         verificationUrl: `${this.baseUrl}/marketplace/${listingId}`,
         generatedAt: new Date().toISOString(),
-        signature: this.generateSignature(listingId, sellerId, listingData.cropType)
+        signature: await this.generateSignature(listingId, sellerId, listingData.cropType)
       };
 
       return await this.generateQRCodeImage(qrData, qrOptions);
@@ -232,7 +250,7 @@ export class QRCodeService {
         verificationUrl: `${this.baseUrl}/certificate/${certificateId}`,
         generatedAt: new Date().toISOString(),
         expiresAt: certificationData.expiryDate,
-        signature: this.generateSignature(certificateId, farmerId, certificationData.certificationType)
+        signature: await this.generateSignature(certificateId, farmerId, certificationData.certificationType)
       };
 
       return await this.generateQRCodeImage(qrData, qrOptions);
@@ -328,7 +346,7 @@ export class QRCodeService {
       const qrData = JSON.parse(code.data) as QRCodeData;
       
       // Verify signature
-      if (!this.verifySignature(qrData)) {
+      if (!(await this.verifySignature(qrData))) {
         throw new Error('Invalid QR code signature');
       }
 
@@ -356,7 +374,7 @@ export class QRCodeService {
       };
 
       // 1. Verify signature
-      if (!this.verifySignature(qrData)) {
+      if (!(await this.verifySignature(qrData))) {
         verification.errors.push('Invalid signature');
         return verification;
       }
@@ -407,18 +425,18 @@ export class QRCodeService {
   /**
    * Generate digital signature for QR code data
    */
-  private generateSignature(id: string, farmerId: string, cropType: string): string {
+  private async generateSignature(id: string, farmerId: string, cropType: string): Promise<string> {
     const data = `${id}:${farmerId}:${cropType}:${new Date().toISOString().split('T')[0]}`;
-    return crypto.createHmac('sha256', this.secretKey).update(data).digest('hex');
+    return await this.hmacSHA256Hex(this.secretKey, data);
   }
 
   /**
    * Verify digital signature
    */
-  private verifySignature(qrData: QRCodeData): boolean {
+  private async verifySignature(qrData: QRCodeData): Promise<boolean> {
     try {
       const data = `${qrData.id}:${qrData.farmerId}:${qrData.cropType}:${qrData.generatedAt.split('T')[0]}`;
-      const expectedSignature = crypto.createHmac('sha256', this.secretKey).update(data).digest('hex');
+      const expectedSignature = await this.hmacSHA256Hex(this.secretKey, data);
       return expectedSignature === qrData.signature;
     } catch (error) {
       console.error('Failed to verify signature:', error);
@@ -478,7 +496,7 @@ export class QRCodeService {
     const updatedData = {
       ...qrData,
       blockchainTxId: transactionId,
-      signature: this.generateSignature(qrData.id, qrData.farmerId, qrData.cropType)
+      signature: await this.generateSignature(qrData.id, qrData.farmerId, qrData.cropType)
     };
 
     return updatedData;
