@@ -1,5 +1,8 @@
 # 🌾 AgriNexus AI
 
+![NodeJS with Vite](https://github.com/laurence77/agri-nexus-ai/actions/workflows/webpack.yml/badge.svg)
+![Deploy to GitHub Pages](https://github.com/laurence77/agri-nexus-ai/actions/workflows/deploy-app.yml/badge.svg)
+
 ## Intelligent Agriculture Platform for Africa
 
 AgriNexus AI is a comprehensive agricultural technology platform designed specifically for African farmers and agribusinesses. Built with AI-powered insights, real-time monitoring, and Africa-first features to transform farming across the continent.
